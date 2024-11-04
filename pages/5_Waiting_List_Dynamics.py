@@ -28,15 +28,30 @@ if 'waiting_list_additions' not in st.session_state:
 if 'waiting_list_removals' not in st.session_state:
     st.session_state.waiting_list_removals = 800
 
-# Use widgets with keys
-st.number_input('Waiting List at the Start of the Year', min_value=0, value=st.session_state.waiting_list_start, key='waiting_list_start')
-st.number_input('Number Added to Waiting List During the Year', min_value=0, value=st.session_state.waiting_list_additions, key='waiting_list_additions')
-st.number_input('Number Removed from Waiting List During the Year', min_value=0, value=st.session_state.waiting_list_removals, key='waiting_list_removals')
+# Use widgets with unique keys
+waiting_list_start = st.number_input(
+    'Waiting List at the Start of the Year',
+    min_value=0,
+    value=st.session_state.waiting_list_start,
+    key='input_waiting_list_start'
+)
+waiting_list_additions = st.number_input(
+    'Number Added to Waiting List During the Year',
+    min_value=0,
+    value=st.session_state.waiting_list_additions,
+    key='input_waiting_list_additions'
+)
+waiting_list_removals = st.number_input(
+    'Number Removed from Waiting List During the Year',
+    min_value=0,
+    value=st.session_state.waiting_list_removals,
+    key='input_waiting_list_removals'
+)
 
-# Retrieve values from session state
-waiting_list_start = st.session_state.waiting_list_start
-waiting_list_additions = st.session_state.waiting_list_additions
-waiting_list_removals = st.session_state.waiting_list_removals
+# Save inputs to session state
+st.session_state.waiting_list_start = waiting_list_start
+st.session_state.waiting_list_additions = waiting_list_additions
+st.session_state.waiting_list_removals = waiting_list_removals
 
 # Calculate end of year waiting list
 waiting_list_end = waiting_list_start + waiting_list_additions - waiting_list_removals
@@ -57,22 +72,22 @@ y = [waiting_list_start, waiting_list_additions, -waiting_list_removals, waiting
 text = [f"{val:.0f}" for val in y]
 
 waterfall_fig = go.Figure(go.Waterfall(
-    name = "Waiting List",
-    orientation = "v",
-    measure = measure,
-    x = x,
-    y = y,
-    textposition = "outside",
-    text = text,
-    connector = {"line":{"color":"rgb(63, 63, 63)"}},
-    decreasing={"marker":{"color":"green"}},
-    increasing={"marker":{"color":"red"}},
-    totals={"marker":{"color":"blue"}}
+    name="Waiting List",
+    orientation="v",
+    measure=measure,
+    x=x,
+    y=y,
+    textposition="outside",
+    text=text,
+    connector={"line": {"color": "rgb(63, 63, 63)"}},
+    decreasing={"marker": {"color": "green"}},
+    increasing={"marker": {"color": "red"}},
+    totals={"marker": {"color": "blue"}}
 ))
 
 waterfall_fig.update_layout(
-    title = "Waiting List Dynamics Over the Year",
-    showlegend = False
+    title="Waiting List Dynamics Over the Year",
+    showlegend=False
 )
 
 st.plotly_chart(waterfall_fig, use_container_width=True)
