@@ -1,4 +1,4 @@
-# app.py
+# Home.py
 
 import streamlit as st
 import pandas as pd
@@ -46,5 +46,21 @@ procedure_data_file = st.sidebar.file_uploader(
 if waiting_list_file is not None:
     st.session_state.waiting_list_df = pd.read_csv(waiting_list_file)
 
+    # Display the head of the waiting list data
+    st.subheader("Waiting List Data Preview")
+    st.write("Here are the first few rows of the Waiting List Data:")
+    st.dataframe(st.session_state.waiting_list_df.head())
+
+else:
+    st.write("Please upload the **Waiting List Data CSV** file in the sidebar.")
+
 if procedure_data_file is not None:
     st.session_state.procedure_df = pd.read_csv(procedure_data_file)
+
+    # Display the head of the procedure data
+    st.subheader("Procedure Data Preview")
+    st.write("Here are the first few rows of the Procedure Data:")
+    st.dataframe(st.session_state.procedure_df.head())
+
+else:
+    st.write("Please upload the **Procedure Data CSV** file in the sidebar.")
