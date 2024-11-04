@@ -28,14 +28,15 @@ if 'waiting_list_additions' not in st.session_state:
 if 'waiting_list_removals' not in st.session_state:
     st.session_state.waiting_list_removals = 800
 
-waiting_list_start = st.number_input('Waiting List at the Start of the Year', min_value=0, value=st.session_state.waiting_list_start, key='waiting_list_start')
-waiting_list_additions = st.number_input('Number Added to Waiting List During the Year', min_value=0, value=st.session_state.waiting_list_additions, key='waiting_list_additions')
-waiting_list_removals = st.number_input('Number Removed from Waiting List During the Year', min_value=0, value=st.session_state.waiting_list_removals, key='waiting_list_removals')
+# Use widgets with keys
+st.number_input('Waiting List at the Start of the Year', min_value=0, value=st.session_state.waiting_list_start, key='waiting_list_start')
+st.number_input('Number Added to Waiting List During the Year', min_value=0, value=st.session_state.waiting_list_additions, key='waiting_list_additions')
+st.number_input('Number Removed from Waiting List During the Year', min_value=0, value=st.session_state.waiting_list_removals, key='waiting_list_removals')
 
-# Save inputs to session state
-st.session_state.waiting_list_start = waiting_list_start
-st.session_state.waiting_list_additions = waiting_list_additions
-st.session_state.waiting_list_removals = waiting_list_removals
+# Retrieve values from session state
+waiting_list_start = st.session_state.waiting_list_start
+waiting_list_additions = st.session_state.waiting_list_additions
+waiting_list_removals = st.session_state.waiting_list_removals
 
 # Calculate end of year waiting list
 waiting_list_end = waiting_list_start + waiting_list_additions - waiting_list_removals
