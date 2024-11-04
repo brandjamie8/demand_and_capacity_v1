@@ -32,11 +32,24 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
         waiting_list_specialty_df = waiting_list_specialty_df.sort_values('month')
 
         # Extract months and demand data
-        months = waiting_list_specialty_df['month'].map(pd.Timestamp.toordinal)
+        months = waiting_list_specialty_df['month']
         demand = waiting_list_specialty_df['additions to waiting list']
 
+        # Convert months to ordinal for regression analysis
+        months_ordinal = months.map(pd.Timestamp.toordinal)
+
         # Perform linear regression to assess trend
-        slope, intercept, r_value, p_value, std_err = linregress(months, demand)
+        slope, intercept, r_value, p_value, std_err = linregress(months_ordinal, demand)
+
+        # Calculate the predicted demand using the regression model
+        predicted_demand = intercept + slope * months_ordinal
+
+        # Create a DataFrame for plotting
+        regression_df = pd.DataFrame({
+            'month': months,
+            'demand': demand,
+            'predicted_demand': predicted_demand
+        })
 
         # Calculate the percentage increase over the period
         start_demand = demand.iloc[0]
@@ -52,6 +65,19 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
         st.write(f"Start of Year Demand: {start_demand:.0f}")
         st.write(f"End of Year Demand: {end_demand:.0f}")
         st.write(f"Total Percentage Increase Over the Year: {percentage_increase:.2f}%")
+
+        # Assess statistical significance
+        st.write(f"**Linear Regression Results:**")
+        st.write(f"Slope: {slope:.4f}")
+        st.write(f"Intercept: {intercept:.4f}")
+        st.write(f"R-squared: {r_value**2:.4f}")
+        st.write(f"P-value: {p_value:.4e}")
+
+        if p_value < 0.05:
+            st.write("The trend is **statistically significant** (p < 0.05).")
+        else:
+            st.write("The trend is **not statistically significant** (p >= 0.05).")
+
         st.write(f"Suggested Multiplier for Next Year's Demand: {projected_multiplier:.2f}")
 
         # Allow user to adjust the multiplier
@@ -114,13 +140,21 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
         st.dataframe(procedure_specialty_df[['procedure', 'additional cases', 'additional minutes']])
 
         # Display charts
-        st.subheader("Demand Over the Current Year")
-        fig_demand = px.line(
-            waiting_list_specialty_df,
+        st.subheader("Demand Over the Current Year with Regression Line")
+        fig_demand = px.scatter(
+            regression_df,
             x='month',
-            y='additions to waiting list',
-            labels={'additions to waiting list': 'Additions to Waiting List'},
-            title='Monthly Demand Over the Current Year'
+            y='demand',
+            labels={'demand': 'Additions to Waiting List'},
+            title='Monthly Demand with Regression Line'
+        )
+        fig_demand.add_traces(
+            px.line(
+                regression_df,
+                x='month',
+                y='predicted_demand',
+                labels={'predicted_demand': 'Predicted Demand'}
+            ).data
         )
         st.plotly_chart(fig_demand, use_container_width=True)
 
