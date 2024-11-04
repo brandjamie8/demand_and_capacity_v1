@@ -7,7 +7,7 @@ import plotly.express as px
 st.title("Procedure Demand")
 
 # Check if data is available in session state
-if st.session_state.procedure_df is not None:
+if 'procedure_df' in st.session_state and st.session_state.procedure_df is not None:
     procedure_df = st.session_state.procedure_df
 
     # Ensure required columns are present
@@ -15,10 +15,15 @@ if st.session_state.procedure_df is not None:
     if all(column in procedure_df.columns for column in required_columns):
         # Use selected specialty from session state
         specialties = procedure_df['specialty'].unique()
-        if st.session_state.selected_specialty is None:
+        if 'selected_specialty' not in st.session_state or st.session_state.selected_specialty not in specialties:
             st.session_state.selected_specialty = specialties[0]
 
-        selected_specialty = st.selectbox('Select Specialty', specialties, index=list(specialties).index(st.session_state.selected_specialty), key='specialty_select')
+        selected_specialty = st.selectbox(
+            'Select Specialty',
+            specialties,
+            index=list(specialties).index(st.session_state.selected_specialty),
+            key='procedure_demand_specialty_select'
+        )
 
         # Save the selected specialty to session state
         st.session_state.selected_specialty = selected_specialty
@@ -27,7 +32,10 @@ if st.session_state.procedure_df is not None:
         procedure_specialty_df = procedure_df[procedure_df['specialty'] == selected_specialty]
 
         # Calculate demand minutes
-        procedure_specialty_df['demand minutes'] = procedure_specialty_df['total referrals'] * procedure_specialty_df['average duration'] * 60
+        procedure_specialty_df['demand minutes'] = procedure_specialty_df['total referrals'] * procedure_specialty_df['average duration']
+
+        # Save the filtered DataFrame in session state for use in other pages
+        st.session_state.procedure_specialty_df = procedure_specialty_df
 
         # Display total demand
         total_demand_cases = procedure_specialty_df['total referrals'].sum()
@@ -35,6 +43,19 @@ if st.session_state.procedure_df is not None:
 
         st.write(f"**Total Demand (Cases):** {total_demand_cases:.0f}")
         st.write(f"**Total Demand (Minutes):** {total_demand_minutes:.0f}")
+
+        # Apply multiplier if available
+        if 'multiplier' in st.session_state:
+            multiplier = st.session_state.multiplier
+            projected_demand_cases = total_demand_cases * multiplier
+            projected_demand_minutes = total_demand_minutes * multiplier
+
+            st.write(f"**Projected Demand for Next Year (Cases):** {projected_demand_cases:.0f}")
+            st.write(f"**Projected Demand for Next Year (Minutes):** {projected_demand_minutes:.0f}")
+
+            # Save projected demand to session state
+            st.session_state.projected_demand_cases = projected_demand_cases
+            st.session_state.projected_demand_minutes = projected_demand_minutes
 
         # Top 10 procedures by total referrals
         top10_cases = procedure_specialty_df.nlargest(10, 'total referrals')
@@ -68,4 +89,4 @@ if st.session_state.procedure_df is not None:
     else:
         st.error("Uploaded file does not contain the required columns.")
 else:
-    st.write("Please upload the Procedure Data CSV file in the sidebar on the **Home** page.")
+    st.write("Please upload the Procedure Data CSV file on the **Home** page.")
