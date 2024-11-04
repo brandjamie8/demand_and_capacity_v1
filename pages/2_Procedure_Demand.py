@@ -27,7 +27,7 @@ if st.session_state.procedure_df is not None:
         procedure_specialty_df = procedure_df[procedure_df['specialty'] == selected_specialty]
 
         # Calculate demand minutes
-        procedure_specialty_df['demand minutes'] = procedure_specialty_df['total referrals'] * procedure_specialty_df['average duration']
+        procedure_specialty_df['demand minutes'] = procedure_specialty_df['total referrals'] * procedure_specialty_df['average duration'] * 60
 
         # Display total demand
         total_demand_cases = procedure_specialty_df['total referrals'].sum()
