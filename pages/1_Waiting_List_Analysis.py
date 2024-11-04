@@ -4,8 +4,6 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-st.set_page_config(page_title='Waiting List Analysis', layout='wide')
-
 st.title("Waiting List Analysis")
 
 # Sidebar Uploaders
