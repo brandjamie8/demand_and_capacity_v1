@@ -10,17 +10,40 @@ st.write("""
 Analyze the dynamics of the waiting list over the year.
 """)
 
+# Check if total demand cases are available
+if 'total_demand_cases' in st.session_state:
+    total_demand_cases = st.session_state.total_demand_cases
+else:
+    total_demand_cases = None
+
 # Input variables
 st.header("Input Waiting List Variables")
 
-waiting_list_start = st.number_input('Waiting List at the Start of the Year', min_value=0, value=500)
-waiting_list_additions = st.number_input('Number Added to Waiting List During the Year', min_value=0, value=1000)
-waiting_list_removals = st.number_input('Number Removed from Waiting List During the Year', min_value=0, value=800)
+if 'waiting_list_start' not in st.session_state:
+    st.session_state.waiting_list_start = 500
+
+if 'waiting_list_additions' not in st.session_state:
+    st.session_state.waiting_list_additions = total_demand_cases if total_demand_cases is not None else 1000
+
+if 'waiting_list_removals' not in st.session_state:
+    st.session_state.waiting_list_removals = 800
+
+waiting_list_start = st.number_input('Waiting List at the Start of the Year', min_value=0, value=st.session_state.waiting_list_start, key='waiting_list_start')
+waiting_list_additions = st.number_input('Number Added to Waiting List During the Year', min_value=0, value=st.session_state.waiting_list_additions, key='waiting_list_additions')
+waiting_list_removals = st.number_input('Number Removed from Waiting List During the Year', min_value=0, value=st.session_state.waiting_list_removals, key='waiting_list_removals')
+
+# Save inputs to session state
+st.session_state.waiting_list_start = waiting_list_start
+st.session_state.waiting_list_additions = waiting_list_additions
+st.session_state.waiting_list_removals = waiting_list_removals
 
 # Calculate end of year waiting list
 waiting_list_end = waiting_list_start + waiting_list_additions - waiting_list_removals
 
 st.write(f"**Waiting List at End of Year:** {waiting_list_end:.0f}")
+
+# Save calculation to session state
+st.session_state.waiting_list_end = waiting_list_end
 
 # Waterfall chart for waiting list dynamics
 st.subheader('Waterfall Chart: Waiting List Dynamics')
