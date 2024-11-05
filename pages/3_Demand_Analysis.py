@@ -53,8 +53,8 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
         })
 
         # Calculate the percentage increase over the period
-        start_demand = demand.iloc[0]
-        end_demand = demand.iloc[-1]
+        start_demand = demand.iloc[:3].mean()
+        end_demand = demand.iloc[-3:].mean()
         percentage_increase = ((end_demand - start_demand) / start_demand) * 100
 
         # Suggest a multiplier based on the percentage increase
@@ -63,23 +63,32 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
         projected_multiplier = 1 + (average_monthly_increase / 100) * 12  # Projecting over 12 months
 
         st.write(f"**Demand Trend Analysis for {selected_specialty}**")
-        st.write(f"Start of Year Demand: {start_demand:.0f}")
-        st.write(f"End of Year Demand: {end_demand:.0f}")
-        st.write(f"Total Percentage Increase Over the Year: {percentage_increase:.2f}%")
+        st.write(f"Average demand in first 3 months: {start_demand:.0f}")
+        st.write(f"Average demand in last 3 months: {end_demand:.0f}")
+        st.write(f"Percentage difference between start and end of year: {percentage_increase:.2f}%")
 
         # Assess statistical significance
         st.write(f"**Linear Regression Results:**")
-        st.write(f"Slope: {slope:.4f}")
-        st.write(f"Intercept: {intercept:.4f}")
-        st.write(f"R-squared: {r_value**2:.4f}")
-        st.write(f"P-value: {p_value:.4e}")
+        st.write(f"Fitting a linear regression model to the ")
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+           st.write(f"Slope: {slope:.4f}")
+           st.write(f"Intercept: {intercept:.4f}")
+        with col2:
+           st.write(f"R-squared: {r_value**2:.4f}")
+           st.write(f"P-value: {p_value:.4e}")
 
         if p_value < 0.05:
             st.write("The trend is **statistically significant** (p < 0.05).")
+            st.write("This means you should change the expected demand for next year.")
+            st.write(f"Suggested multiplier for next year's demand: {projected_multiplier:.2f}")
         else:
             st.write("The trend is **not statistically significant** (p >= 0.05).")
-
-        st.write(f"Suggested Multiplier for Next Year's Demand: {projected_multiplier:.2f}")
+            st.write("This means you may want change the expected demand for next year if you think it will be different.")
+            st.write(f"Suggested multiplier for next year's demand: Between 1 and {projected_multiplier:.2f}")
+        
 
         # Allow user to adjust the multiplier
         multiplier = st.number_input(
