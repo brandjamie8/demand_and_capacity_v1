@@ -71,33 +71,33 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
         procedure_specialty_df['average duration'] = pd.to_numeric(procedure_specialty_df['average duration'], errors='coerce')
 
         # Calculate demand minutes
-        procedure_specialty_df['demand minutes'] = procedure_specialty_df['total referrals'] * procedure_specialty_df['average duration']
+        procedure_specialty_df['demand minutes'] = procedure_specialty_df['total referrals'] * procedure_specialty_df['average duration'] * 60
 
-        # Top 10 procedures by total referrals
-        top10_referrals = procedure_specialty_df.nlargest(10, 'total referrals')
+        # Top 5 procedures by total referrals
+        top5_referrals = procedure_specialty_df.nlargest(5, 'total referrals')
 
         with col1:
-            st.write("Top 10 Procedures by Total Referrals")
+            st.write("Top 5 Procedures by Total Referrals")
             fig3 = px.bar(
-                top10_referrals,
+                top5_referrals,
                 x='procedure',
                 y='total referrals',
                 labels={'procedure': 'Procedure', 'total referrals': 'Total Referrals'},
-                title='Top 10 Procedures by Total Referrals'
+                title='Top 5 Procedures by Total Referrals'
             )
             st.plotly_chart(fig3, use_container_width=True)
 
-        # Top 10 procedures by demand minutes
-        top10_demand_minutes = procedure_specialty_df.nlargest(10, 'demand minutes')
+        # Top 5 procedures by demand minutes
+        top5_demand_minutes = procedure_specialty_df.nlargest(5, 'demand minutes')
 
         with col2:
-            st.write("Top 10 Procedures by Demand Minutes")
+            st.write("Top 5 Procedures by Demand Minutes")
             fig4 = px.bar(
-                top10_demand_minutes,
+                top5_demand_minutes,
                 x='procedure',
                 y='demand minutes',
                 labels={'procedure': 'Procedure', 'demand minutes': 'Demand Minutes'},
-                title='Top 10 Procedures by Demand Minutes'
+                title='Top 5 Procedures by Demand Minutes'
             )
             st.plotly_chart(fig4, use_container_width=True)
 
