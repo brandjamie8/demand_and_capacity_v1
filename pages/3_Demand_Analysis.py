@@ -147,7 +147,6 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
             y='demand',
             labels={'demand': 'Additions to Waiting List'},
             title='Monthly Demand with Regression Line',
-            mode='lines',
             line=dict(color='#f5136f')
         )
         fig_demand.add_traces(
