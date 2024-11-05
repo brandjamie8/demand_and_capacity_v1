@@ -140,26 +140,33 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
         st.subheader("Additional Demand Distribution Among Procedures")
         st.dataframe(procedure_specialty_df[['procedure', 'additional cases', 'additional minutes']])
 
-        # Display charts
-        st.subheader("Demand Over the Current Year with Regression Line")
         fig_demand = go.Figure()
-        fig_demand.add_trace(go.scatter(
-            regression_df,
-            x='month',
-            y='demand',
-            labels={'demand': 'Additions to Waiting List'},
-            title='Monthly Demand with Regression Line',
+      
+        # Add the actual demand trace
+        fig_demand.add_trace(go.Scatter(
+            x=regression_df['month'],
+            y=regression_df['demand'],
             mode='lines+markers',
-            color='#f5136f'
+            name='Additions to Waiting List',
+            line=dict(color='#f5136f')
+        ))
+      
+        # Add the predicted demand trace
+        fig_demand.add_trace(go.Scatter(
+            x=regression_df['month'],
+            y=regression_df['predicted_demand'],
+            mode='lines',
+            name='Predicted Demand'
+        ))
+      
+        # Update the layout with title and labels
+        fig_demand.update_layout(
+            title='Monthly Demand with Regression Line',
+            xaxis_title='Month',
+            yaxis_title='Demand',
+            legend_title='Legend'
         )
-        fig_demand.add_traces(
-            px.line(
-                regression_df,
-                x='month',
-                y='predicted_demand',
-                labels={'predicted_demand': 'Predicted Demand'}
-            ).data
-        )
+      
         st.plotly_chart(fig_demand, use_container_width=True)
 
         # Display bar chart comparing current year and next year's projected demand
