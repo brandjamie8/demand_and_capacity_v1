@@ -68,17 +68,17 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
         st.write(f"Percentage difference between start and end of year: {percentage_increase:.2f}%")
 
         # Assess statistical significance
-        st.write(f"**Linear Regression Results:**")
-        st.write(f"Fitting a linear regression model to the ")
+        st.write(f"**Linear Regression Results**")
+        st.write(f"Fitting a linear regression model to the demand to determine whether it is increasing significantly:")
 
         col1, col2, col3 = st.columns(3)
 
         with col1:
-           st.write(f"Slope: {slope:.4f}")
-           st.write(f"Intercept: {intercept:.4f}")
+           st.write(f"Slope: {slope:.3f}")
+           st.write(f"Intercept: {intercept:.3f}")
         with col2:
-           st.write(f"R-squared: {r_value**2:.4f}")
-           st.write(f"P-value: {p_value:.4e}")
+           st.write(f"R-squared: {r_value**2:.3f}")
+           st.write(f"P-value: {p_value:.3e}")
 
         if p_value < 0.05:
             st.write("The trend is **statistically significant** (p < 0.05).")
