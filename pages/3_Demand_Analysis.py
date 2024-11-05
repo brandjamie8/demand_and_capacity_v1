@@ -141,7 +141,7 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
 
         # Display charts
         st.subheader("Demand Over the Current Year with Regression Line")
-        fig_demand = px.scatter(
+        fig_demand = px.line(
             regression_df,
             x='month',
             y='demand',
