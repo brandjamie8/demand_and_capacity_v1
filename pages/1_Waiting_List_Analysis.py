@@ -64,7 +64,7 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
         st.plotly_chart(fig2, use_container_width=True)
 
         # Below, side by side charts for procedure data
-        st.subheader("Top 10 Procedures by Demand")
+        st.subheader("Top 5 Procedures by Demand")
         col1, col2 = st.columns(2)
 
         # Ensure 'average duration' is numeric
