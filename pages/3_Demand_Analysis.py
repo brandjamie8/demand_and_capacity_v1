@@ -3,6 +3,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 from scipy.stats import linregress
 import numpy as np
 
@@ -141,13 +142,15 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
 
         # Display charts
         st.subheader("Demand Over the Current Year with Regression Line")
-        fig_demand = px.line(
+        fig_demand = go.Figure()
+        fig_demand.add_trace(go.scatter(
             regression_df,
             x='month',
             y='demand',
             labels={'demand': 'Additions to Waiting List'},
             title='Monthly Demand with Regression Line',
-            line=dict(color='#f5136f')
+            mode='lines+markers',
+            color='#f5136f'
         )
         fig_demand.add_traces(
             px.line(
