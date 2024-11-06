@@ -137,30 +137,34 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     # Get the last known total waiting list size
                     last_total_waiting_list = waiting_list_specialty_df.iloc[-1]['total waiting list']
 
-                    # Create date range for future months
+                    # Create date range for future months, including the modeling start date
                     future_months = pd.date_range(
                         start=latest_month_in_data + pd.offsets.MonthBegin(1),
-                        periods=num_future_months,
+                        end=model_start_date,
                         freq='MS'
                     )
-
-                    # Initialize predicted data
-                    predicted_total_waiting_list = []
-                    current_total = last_total_waiting_list
-
-                    # Random sampling for predictions
-                    for month in future_months:
-                        sampled_addition = baseline_data['additions to waiting list'].sample(n=1).values[0]
-                        sampled_removal = baseline_data['removals from waiting list'].sample(n=1).values[0]
-                        current_total = current_total + sampled_addition - sampled_removal
-                        predicted_total_waiting_list.append({
-                            'month': month,
-                            'total waiting list': current_total
-                        })
-
-                    # Create DataFrame of predictions
-                    predictions_df = pd.DataFrame(predicted_total_waiting_list)
+                    
+                    # Initialize a DataFrame to store total waiting list sizes for each simulation
+                    simulation_results = pd.DataFrame({'month': future_months})
+                    
+                    for sim in range(num_simulations):
+                        current_total = last_total_waiting_list
+                        predicted_totals = []
+                        for month in future_months:
+                            sampled_addition = baseline_data['additions to waiting list'].sample(n=1).values[0]
+                            sampled_removal = baseline_data['removals from waiting list'].sample(n=1).values[0]
+                            current_total = current_total + sampled_addition - sampled_removal
+                            predicted_totals.append(current_total)
+                        # Add the predicted totals to the DataFrame
+                        simulation_results[f'simulation_{sim+1}'] = predicted_totals
+                    
+                    # Calculate the average predicted total waiting list size for each month
+                    simulation_results['average_total_waiting_list'] = simulation_results.filter(like='simulation_').mean(axis=1)
+                    
+                    # Create the final predictions DataFrame
+                    predictions_df = simulation_results[['month', 'average_total_waiting_list']].rename(columns={'average_total_waiting_list': 'total waiting list'})
                     predictions_df['Data Type'] = 'Predicted'
+
 
                     # Prepare combined data
                     actual_data = waiting_list_specialty_df.copy()
