@@ -146,6 +146,8 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     
                     # Initialize a DataFrame to store total waiting list sizes for each simulation
                     simulation_results = pd.DataFrame({'month': future_months})
+
+                    num_simulations = 1000
                     
                     for sim in range(num_simulations):
                         current_total = last_total_waiting_list
