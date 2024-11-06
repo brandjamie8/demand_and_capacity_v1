@@ -197,7 +197,7 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     # Print the prediction message
                     predicted_starting_waiting_list_size = predictions_df.iloc[-1]['total waiting list']
                     st.write(f"")
-                    st.write(f"Predicted starting waiting list size at {model_start_date.strftime('%m-%Y')} is: **{predicted_starting_waiting_list_size:.0f}**.")
+                    st.write(f"Predicted starting waiting list size at {model_start_date.strftime('%M-%Y')} is: **{predicted_starting_waiting_list_size:.0f}**.")
                     st.write(f"This will be the starting position for modelling the impact of future capacity.")
             else:
                 st.write("Modeling start date is not after the latest month in the data. No prediction needed.")
