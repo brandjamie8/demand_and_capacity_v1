@@ -73,7 +73,7 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
         fig1.add_vrect(
             x0=baseline_start_date,
             x1=baseline_end_date,
-            fillcolor="LightSalmon",
+            fillcolor="LightGrey",
             opacity=0.5,
             layer="below",
             line_width=0,
