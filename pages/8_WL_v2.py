@@ -84,7 +84,7 @@ months_in_year = 12
 over_18_weeks = np.zeros(months_in_year)
 over_52_weeks = np.zeros(months_in_year)
 
-weekly_additions = waiting_list_additions / (months_in_year * 4.345)  # Approximate weeks in a month
+weekly_additions = waiting_list_additions / (months_in_year * 4.345)
 
 current_waiting_list = np.full(52, waiting_list_start / 52)
 
