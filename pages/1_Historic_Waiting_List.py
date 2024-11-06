@@ -255,8 +255,8 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     st.write(f"Predicted starting waiting list size for {model_start_date.strftime('%b-%Y')} is: **{predicted_starting_waiting_list_size:.0f}**.")
                     st.write(f"This will be the starting position for modelling the impact of future capacity.")
                     st.write("The shaded areas in the prediction chart show the expected range of the waiting list size:")
-                    st.write(f"- **Dark Shaded Area (25th-75th Percentile):** There is a **50% probability** that the actual waiting list size will be between {predictions_df.iloc[-1]['percentile_25']} and {predictions_df.iloc[-1]['percentile_75']}.")
-                    st.write(f"- **Light Shaded Area (5th-95th Percentile):** There is a **90% probability** that the actual waiting list size will be between {predictions_df.iloc[-1]['percentile_5']} and {predictions_df.iloc[-1]['percentile_95']}.")
+                    st.write(f"- **Dark Shaded Area (25th-75th Percentile):** There is a **50% probability** that the actual waiting list size will be between {simulation_results.iloc[-1]['percentile_25']} and {simulation_results.iloc[-1]['percentile_75']}.")
+                    st.write(f"- **Light Shaded Area (5th-95th Percentile):** There is a **90% probability** that the actual waiting list size will be between {simulation_results.iloc[-1]['percentile_5']} and {simulation_results.iloc[-1]['percentile_95']}.")
 
     else:
         st.error("Uploaded files do not contain the required columns.")
