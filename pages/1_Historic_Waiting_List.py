@@ -19,10 +19,8 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
 
     # Ensure required columns are present
     waiting_list_required_columns = ['month', 'specialty', 'additions to waiting list', 'removals from waiting list', 'total waiting list']
-    procedure_required_columns = ['specialty', 'procedure', 'total referrals', 'average duration']
 
-    if all(column in waiting_list_df.columns for column in waiting_list_required_columns) and \
-       all(column in procedure_df.columns for column in procedure_required_columns):
+    if all(column in waiting_list_df.columns for column in waiting_list_required_columns):
 
         # Select specialty
         specialties = waiting_list_df['specialty'].unique()
