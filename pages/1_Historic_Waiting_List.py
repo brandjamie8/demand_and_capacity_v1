@@ -6,10 +6,16 @@ import plotly.graph_objects as go
 
 st.title("Historic Waiting List")
 
+st.markdown("""
+This page analyses the historic waiting list data and provides a predicted starting point for future capacity planning.
+
+- **Baseline Period Selection:** Choose a period that represents typical additions and removals to the waiting list. The model uses data from this period to simulate future changes.
+- **Modeling Start Date:** Select a future date after the latest available data. The model predicts the waiting list size up to this date.
+""")
+
 # Check if data is available in session state
 if st.session_state.waiting_list_df is not None and st.session_state.procedure_df is not None:
     waiting_list_df = st.session_state.waiting_list_df
-    procedure_df = st.session_state.procedure_df
 
     # Ensure required columns are present
     waiting_list_required_columns = ['month', 'specialty', 'additions to waiting list', 'removals from waiting list', 'total waiting list']
@@ -32,12 +38,8 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
 
         # Filter data based on selected specialty
         waiting_list_specialty_df = waiting_list_df[waiting_list_df['specialty'] == selected_specialty]
-        procedure_specialty_df = procedure_df[procedure_df['specialty'] == selected_specialty]
-
-        # Convert 'month' column to datetime if not already
-        if not pd.api.types.is_datetime64_any_dtype(waiting_list_specialty_df['month']):
-            waiting_list_specialty_df['month'] = pd.to_datetime(waiting_list_specialty_df['month'])
-
+        # Convert 'month' column to datetime and adjust to end of month
+        waiting_list_specialty_df['month'] = pd.to_datetime(waiting_list_specialty_df['month']).dt.to_period('M').dt.to_timestamp('M')
         # Sort by month
         waiting_list_specialty_df = waiting_list_specialty_df.sort_values('month')
 
@@ -59,6 +61,12 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
         ### **2. Baseline Period Selection**
         st.subheader("Baseline Period Selection")
 
+        st.subheader("Baseline Period Selection")
+        st.write("""
+        Select the start and end dates for the baseline period. The model will use data from this period to simulate future additions and removals from the waiting list. The selected period should reflect typical activity.
+        """)
+
+           
         col1, col2, _, _ = st.columns(4)
         with col1:
             baseline_start_date = st.date_input(
@@ -72,8 +80,8 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
             )
 
         # Convert selected dates to datetime
-        baseline_start_date = pd.to_datetime(baseline_start_date)
-        baseline_end_date = pd.to_datetime(baseline_end_date)
+        baseline_start_date = pd.to_datetime(baseline_start_date).to_period('M').to_timestamp('M')
+        baseline_end_date = pd.to_datetime(baseline_end_date).to_period('M').to_timestamp('M')
 
         # Update fig1 to highlight the baseline period if dates are selected
         if baseline_start_date != baseline_end_date:
@@ -118,13 +126,19 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
         ### **4. Modeling Start Date Input and Automatic Prediction Length Calculation**
         st.subheader("Modeling Start Date")
 
+        st.subheader("Modeling Start Date")
+        st.write("""
+        Select the date from which you want the model to start predicting the waiting list size. This date should be after the latest month in the data.
+        """)
+
+           
         model_start_date = st.date_input(
             'Start Date for Modeling',
             value=waiting_list_specialty_df['month'].max()
         )
 
         # Convert modeling start date to datetime
-        model_start_date = pd.to_datetime(model_start_date)
+        model_start_date = pd.to_datetime(model_start_date).to_period('M').to_timestamp('M')
 
         # Latest month in the data
         latest_month_in_data = waiting_list_specialty_df['month'].max()
@@ -151,10 +165,11 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
 
                     # Create date range for future months, including the modeling start date
                     future_months = pd.date_range(
-                        start=latest_month_in_data + pd.offsets.MonthBegin(1),
+                        start=latest_month_in_data + pd.offsets.MonthEnd(1),
                         end=model_start_date,
-                        freq='MS'
+                        freq='M'
                     )
+
                     
                     # Initialize a DataFrame to store total waiting list sizes for each simulation
                     simulation_results = pd.DataFrame({'month': future_months})
@@ -172,13 +187,17 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                         # Add the predicted totals to the DataFrame
                         simulation_results[f'simulation_{sim+1}'] = predicted_totals
                     
-                    # Calculate the average predicted total waiting list size for each month
-                    simulation_results['average_total_waiting_list'] = simulation_results.filter(like='simulation_').mean(axis=1)
-                    
-                    # Create the final predictions DataFrame
-                    predictions_df = simulation_results[['month', 'average_total_waiting_list']].rename(columns={'average_total_waiting_list': 'total waiting list'})
+                    # Calculate percentiles for the predictions
+                    percentiles = [5, 25, 50, 75, 95]
+                    percentile_values = simulation_results.filter(like='simulation_').quantile(q=[p/100 for p in percentiles], axis=1).T
+                    percentile_values.columns = [f'percentile_{p}' for p in percentiles]
+    
+                    # Merge percentiles with simulation_results
+                    simulation_results = pd.concat([simulation_results[['month']], percentile_values], axis=1)
+    
+                    # Use the 50th percentile (median) as the average prediction
+                    predictions_df = simulation_results[['month', 'percentile_50']].rename(columns={'percentile_50': 'total waiting list'})
                     predictions_df['Data Type'] = 'Predicted'
-
 
                     # Prepare combined data
                     actual_data = waiting_list_specialty_df.copy()
@@ -197,7 +216,30 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                         title='Total Size of the Waiting List with Predictions',
                         height=600  # Adjust as needed
                     )
-
+                    # Add shaded areas for the percentiles
+                    fig2.add_traces([
+                        go.Scatter(
+                            name='5th-95th Percentile',
+                            x=simulation_results['month'].tolist() + simulation_results['month'][::-1].tolist(),
+                            y=simulation_results['percentile_95'].tolist() + simulation_results['percentile_5'][::-1].tolist(),
+                            fill='toself',
+                            fillcolor='rgba(200, 200, 200, 0.2)',
+                            line=dict(color='rgba(255,255,255,0)'),
+                            hoverinfo="skip",
+                            showlegend=True
+                        ),
+                        go.Scatter(
+                            name='25th-75th Percentile',
+                            x=simulation_results['month'].tolist() + simulation_results['month'][::-1].tolist(),
+                            y=simulation_results['percentile_75'].tolist() + simulation_results['percentile_25'][::-1].tolist(),
+                            fill='toself',
+                            fillcolor='rgba(160, 160, 160, 0.4)',
+                            line=dict(color='rgba(255,255,255,0)'),
+                            hoverinfo="skip",
+                            showlegend=True
+                        )
+                    ])
+                    
                     # Customize line styles
                     fig2.update_traces(
                         line=dict(width=3),
@@ -217,8 +259,13 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     st.write(f"")
                     st.write(f"Predicted starting waiting list size for {model_start_date.strftime('%b-%Y')} is: **{predicted_starting_waiting_list_size:.0f}**.")
                     st.write(f"This will be the starting position for modelling the impact of future capacity.")
+                    st.write("""
+                    The shaded areas in the prediction chart represent the variability in the model's predictions:
+                    - **Dark Shaded Area (25th-75th Percentile):** Middle 50% of predicted values.
+                    - **Light Shaded Area (5th-95th Percentile):** Represents 90% of predicted values.
+                    """)
 
     else:
         st.error("Uploaded files do not contain the required columns.")
 else:
-    st.write("Please upload both the Waiting List Data CSV and the Procedure Data CSV files in the sidebar on the **Home** page.")
+    st.write("Please upload the Waiting List Data in the sidebar on the **Home** page.")
