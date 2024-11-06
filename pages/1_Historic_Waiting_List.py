@@ -23,7 +23,7 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
         if st.session_state.selected_specialty is None:
             st.session_state.selected_specialty = specialties[0]
         
-        col1, _ = st.columns([1,5])
+        col1, _ = st.columns([1,4])
         with col1:
             selected_specialty = st.selectbox('Select Specialty', specialties, index=list(specialties).index(st.session_state.selected_specialty), key='specialty_select')
 
@@ -50,7 +50,8 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
             x='month',
             y=['additions to waiting list', 'removals from waiting list'],
             labels={'value': 'Number of Patients', 'variable': 'Legend'},
-            title='Additions and Removals from Waiting List'
+            title='Additions and Removals from Waiting List',
+            height=600
         )
         st.plotly_chart(fig1, use_container_width=True)
 
