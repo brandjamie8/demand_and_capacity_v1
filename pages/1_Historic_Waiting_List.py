@@ -195,8 +195,10 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     fig2_placeholder.plotly_chart(fig2, use_container_width=True)
 
                     # Print the prediction message
-                    predicted_starting_waiting_list_size = predictions_df.iloc[0]['total waiting list']
-                    st.write(f"Predicted starting waiting list size at {model_start_date.strftime('%Y-%m-%d')} is {predicted_starting_waiting_list_size:.0f}.")
+                    predicted_starting_waiting_list_size = predictions_df.iloc[-1]['total waiting list']
+                    st.write(f"")
+                    st.write(f"Predicted starting waiting list size at {model_start_date.strftime('%m-%Y')} is: **{predicted_starting_waiting_list_size:.0f}**.")
+                    st.write(f"This will be the starting position for modelling the impact of future capacity.")
             else:
                 st.write("Modeling start date is not after the latest month in the data. No prediction needed.")
         else:
