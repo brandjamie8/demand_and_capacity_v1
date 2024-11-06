@@ -4,7 +4,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-st.title("Waiting List Analysis")
+st.title("Historic Waiting List")
 
 # Check if data is available in session state
 if st.session_state.waiting_list_df is not None and st.session_state.procedure_df is not None:
