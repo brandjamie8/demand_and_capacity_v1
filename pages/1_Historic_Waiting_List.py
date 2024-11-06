@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
+
 
 st.title("Historic Waiting List")
 
@@ -82,6 +84,16 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                 opacity=0.5,
                 layer="below",
                 line_width=0,
+            )
+            fig1.add_trace(
+                go.Scatter(
+                    x=[baseline_start_date, baseline_end_date],
+                    y=[None, None],
+                    mode='markers',
+                    marker=dict(color='LightGrey'),
+                    name='Baseline Period',
+                    showlegend=True
+                )
             )
             # Re-display fig1 with the baseline highlight
             fig1_placeholder.plotly_chart(fig1, use_container_width=True)
