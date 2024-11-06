@@ -169,7 +169,7 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     # Initialize a DataFrame to store total waiting list sizes for each simulation
                     simulation_results = pd.DataFrame({'month': future_months})
 
-                    num_simulations = 50
+                    num_simulations = 100
                     
                     for sim in range(num_simulations):
                         current_total = last_total_waiting_list
@@ -242,7 +242,7 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     )
 
                     fig2.update_traces(
-                        line=dict(dash='dash', width=2),
+                        line=dict(dash='dash', width=4),
                         selector=dict(name='Predicted')
                     )
 
