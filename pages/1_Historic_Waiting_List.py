@@ -56,13 +56,11 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
         col1, col2 = st.columns(2)
         with col1:
             baseline_start_date = st.date_input(
-                'Baseline Start Date',
-                value=waiting_list_specialty_df['month'].min()
+                'Baseline Start Date'
             )
         with col2:
             baseline_end_date = st.date_input(
-                'Baseline End Date',
-                value=waiting_list_specialty_df['month'].max()
+                'Baseline End Date'
             )
 
         # Convert selected dates to datetime
