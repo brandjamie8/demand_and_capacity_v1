@@ -122,7 +122,6 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
         ### **4. Modeling Start Date Input and Automatic Prediction Length Calculation**
         st.subheader("Modeling Start Date")
 
-        st.subheader("Modeling Start Date")
         st.write("""
         Select the date from which you want the model to start predicting the waiting list size. This date should be after the latest month in the data.
         """)
