@@ -58,8 +58,6 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
 
         ### **2. Baseline Period Selection**
         st.subheader("Baseline Period Selection")
-
-        st.subheader("Baseline Period Selection")
         st.write("""
         Select the start and end dates for the baseline period. The model will use data from this period to simulate future additions and removals from the waiting list. The selected period should reflect typical activity.
         """)
