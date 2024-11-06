@@ -228,7 +228,7 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                             x=simulation_results['month'].tolist() + simulation_results['month'][::-1].tolist(),
                             y=simulation_results['percentile_75'].tolist() + simulation_results['percentile_25'][::-1].tolist(),
                             fill='toself',
-                            fillcolor='rgba(160, 160, 160, 0.4)',
+                            fillcolor='rgba(160, 160, 160, 0.3)',
                             line=dict(color='rgba(255,255,255,0)'),
                             hoverinfo="skip",
                             showlegend=True
