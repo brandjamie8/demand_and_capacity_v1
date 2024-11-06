@@ -249,14 +249,19 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     # Re-display fig2 with predictions
                     fig2_placeholder.plotly_chart(fig2, use_container_width=True)
 
-                    # Print the prediction message
-                    predicted_starting_waiting_list_size = predictions_df.iloc[-1]['total waiting list']
+                    # Access the percentile values for the last predicted month
+                    last_month_data = simulation_results.iloc[-1]
+                    percentile_5 = last_month_data['percentile_5']
+                    percentile_25 = last_month_data['percentile_25']
+                    percentile_50 = last_month_data['percentile_50']  # Median
+                    percentile_75 = last_month_data['percentile_75']
+                    percentile_95 = last_month_data['percentile_95']
+                
                     st.write(f"")
-                    st.write(f"Predicted starting waiting list size for {model_start_date.strftime('%b-%Y')} is: **{predicted_starting_waiting_list_size:.0f}**.")
+                    st.write(f"Predicted starting waiting list size for {model_start_date.strftime('%b-%Y')} is: **{percentile_50:.0f}**.")
                     st.write(f"This will be the starting position for modelling the impact of future capacity.")
-                    st.write("The shaded areas in the prediction chart show the expected range of the waiting list size:")
-                    st.write(f"- **Dark Shaded Area (25th-75th Percentile):** There is a **50% probability** that the actual waiting list size will be between {simulation_results.iloc[-1]['percentile_25']} and {simulation_results.iloc[-1]['percentile_75']}.")
-                    st.write(f"- **Light Shaded Area (5th-95th Percentile):** There is a **90% probability** that the actual waiting list size will be between {simulation_results.iloc[-1]['percentile_5']} and {simulation_results.iloc[-1]['percentile_95']}.")
+                    st.write(f"- **Expected range with 50% probability (25th-75th percentile):** {percentile_25:.0f} to {percentile_75:.0f}")
+                    st.write(f"- **Expected range with 90% probability (5th-95th percentile):** {percentile_5:.0f} to {percentile_95:.0f}")
 
     else:
         st.error("Uploaded files do not contain the required columns.")
