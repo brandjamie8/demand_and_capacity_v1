@@ -147,7 +147,7 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     # Initialize a DataFrame to store total waiting list sizes for each simulation
                     simulation_results = pd.DataFrame({'month': future_months})
 
-                    num_simulations = 1000
+                    num_simulations = 50
                     
                     for sim in range(num_simulations):
                         current_total = last_total_waiting_list
@@ -205,10 +205,6 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     st.write(f"")
                     st.write(f"Predicted starting waiting list size for {model_start_date.strftime('%b-%Y')} is: **{predicted_starting_waiting_list_size:.0f}**.")
                     st.write(f"This will be the starting position for modelling the impact of future capacity.")
-            else:
-                st.write("Modeling start date is not after the latest month in the data. No prediction needed.")
-        else:
-            st.write("Modeling start date is not after the latest month in the data. No prediction needed.")
 
     else:
         st.error("Uploaded files do not contain the required columns.")
