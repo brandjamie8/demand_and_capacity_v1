@@ -23,7 +23,7 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
         if st.session_state.selected_specialty is None:
             st.session_state.selected_specialty = specialties[0]
         
-        col1, _ = st.columns(2)
+        col1, _, _ = st.columns(3)
         with col1:
             selected_specialty = st.selectbox('Select Specialty', specialties, index=list(specialties).index(st.session_state.selected_specialty), key='specialty_select')
 
