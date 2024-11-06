@@ -50,10 +50,14 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
             height=600  # Adjust the height as needed
         )
 
-        ### **2. Baseline Period Selection with Highlight on fig1**
+        # Display fig1 before the baseline date selections
+        fig1_placeholder = st.empty()
+        fig1_placeholder.plotly_chart(fig1, use_container_width=True)
+
+        ### **2. Baseline Period Selection**
         st.subheader("Baseline Period Selection")
 
-        col1, col2 = st.columns(2)
+        col1, col2, _, _ = st.columns(4)
         with col1:
             baseline_start_date = st.date_input(
                 'Baseline Start Date',
@@ -69,18 +73,18 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
         baseline_start_date = pd.to_datetime(baseline_start_date)
         baseline_end_date = pd.to_datetime(baseline_end_date)
 
-        # Highlight the baseline period on fig1
-        fig1.add_vrect(
-            x0=baseline_start_date,
-            x1=baseline_end_date,
-            fillcolor="LightGrey",
-            opacity=0.5,
-            layer="below",
-            line_width=0,
-        )
-
-        # Display fig1 with the highlighted baseline period
-        st.plotly_chart(fig1, use_container_width=True)
+        # Update fig1 to highlight the baseline period if dates are selected
+        if baseline_start_date != baseline_end_date:
+            fig1.add_vrect(
+                x0=baseline_start_date,
+                x1=baseline_end_date,
+                fillcolor="LightGrey",
+                opacity=0.5,
+                layer="below",
+                line_width=0,
+            )
+            # Re-display fig1 with the baseline highlight
+            fig1_placeholder.plotly_chart(fig1, use_container_width=True)
 
         ### **3. Waiting List Over Time Plot (fig2)**
         st.subheader("Total Size of the Waiting List Over Time")
@@ -95,7 +99,7 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
             height=600  # Adjust the height as needed
         )
 
-        # Placeholder to update fig2 later if needed
+        # Display fig2
         fig2_placeholder = st.empty()
         fig2_placeholder.plotly_chart(fig2, use_container_width=True)
 
