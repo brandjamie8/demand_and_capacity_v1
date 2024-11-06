@@ -13,7 +13,7 @@ if 'procedure_df' in st.session_state and st.session_state.procedure_df is not N
     # Ensure required columns are present
     required_columns = ['specialty', 'procedure', 'total referrals', 'average duration']
     if all(column in procedure_df.columns for column in required_columns):
-        st.subtitle("Procedure Demand")
+        st.subheader("Procedure Demand")
         # Use selected specialty from session state
         specialties = procedure_df['specialty'].unique()
         if 'selected_specialty' not in st.session_state or st.session_state.selected_specialty not in specialties:
@@ -96,7 +96,7 @@ import plotly.graph_objects as go
 from scipy.stats import linregress
 import numpy as np
 
-st.subtitle("Time Series Analysis")
+st.subheader("Time Series Analysis")
 
 # Check if necessary data is available
 if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df is not None) and \
