@@ -63,44 +63,6 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
         )
         st.plotly_chart(fig2, use_container_width=True)
 
-        # Below, side by side charts for procedure data
-        st.subheader("Top 5 Procedures by Demand")
-        col1, col2 = st.columns(2)
-
-        # Ensure 'average duration' is numeric
-        procedure_specialty_df['average duration'] = pd.to_numeric(procedure_specialty_df['average duration'], errors='coerce')
-
-        # Calculate demand minutes
-        procedure_specialty_df['demand minutes'] = procedure_specialty_df['total referrals'] * procedure_specialty_df['average duration'] * 60
-
-        # Top 5 procedures by total referrals
-        top5_referrals = procedure_specialty_df.nlargest(5, 'total referrals')
-
-        with col1:
-            st.write("Top 5 Procedures by Total Referrals")
-            fig3 = px.bar(
-                top5_referrals,
-                x='procedure',
-                y='total referrals',
-                labels={'procedure': 'Procedure', 'total referrals': 'Total Referrals'},
-                title='Top 5 Procedures by Total Referrals'
-            )
-            st.plotly_chart(fig3, use_container_width=True)
-
-        # Top 5 procedures by demand minutes
-        top5_demand_minutes = procedure_specialty_df.nlargest(5, 'demand minutes')
-
-        with col2:
-            st.write("Top 5 Procedures by Demand Minutes")
-            fig4 = px.bar(
-                top5_demand_minutes,
-                x='procedure',
-                y='demand minutes',
-                labels={'procedure': 'Procedure', 'demand minutes': 'Demand Minutes'},
-                title='Top 5 Procedures by Demand Minutes'
-            )
-            st.plotly_chart(fig4, use_container_width=True)
-
     else:
         st.error("Uploaded files do not contain the required columns.")
 else:
