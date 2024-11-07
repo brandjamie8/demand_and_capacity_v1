@@ -57,36 +57,6 @@ if 'procedure_df' in st.session_state and st.session_state.procedure_df is not N
             # Save projected demand to session state
             st.session_state.projected_demand_cases = projected_demand_cases
             st.session_state.projected_demand_minutes = projected_demand_minutes
-
-        # Top 10 procedures by total referrals
-        top10_cases = procedure_specialty_df.nlargest(10, 'total referrals')
-
-        # Chart - Top 10 procedure demand in cases
-        st.subheader("Top 10 Procedures by Demand in Cases")
-        fig_top10_cases = px.bar(
-            top10_cases,
-            x='procedure',
-            y='total referrals',
-            title='Top 10 Procedures by Demand in Cases',
-            labels={'procedure': 'Procedure', 'total referrals': 'Total Referrals'},
-            text='total referrals'
-        )
-        st.plotly_chart(fig_top10_cases, use_container_width=True)
-
-        # Top 10 procedures by demand minutes
-        top10_minutes = procedure_specialty_df.nlargest(10, 'demand minutes')
-
-        # Chart - Top 10 procedure demand in minutes
-        st.subheader("Top 10 Procedures by Demand in Minutes")
-        fig_top10_minutes = px.bar(
-            top10_minutes,
-            x='procedure',
-            y='demand minutes',
-            title='Top 10 Procedures by Demand in Minutes',
-            labels={'procedure': 'Procedure', 'demand minutes': 'Demand Minutes'},
-            text='demand minutes'
-        )
-        st.plotly_chart(fig_top10_minutes, use_container_width=True)
     else:
         st.error("Uploaded file does not contain the required columns.")
 else:
@@ -276,6 +246,37 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
             title='Demand Comparison'
         )
         st.plotly_chart(fig_comparison, use_container_width=True)
+
+
+        # Top 10 procedures by total referrals
+        top10_cases = procedure_specialty_df.nlargest(10, 'total referrals')
+
+        # Chart - Top 10 procedure demand in cases
+        st.subheader("Top 10 Procedures by Demand in Cases")
+        fig_top10_cases = px.bar(
+            top10_cases,
+            x='procedure',
+            y='total referrals',
+            title='Top 10 Procedures by Demand in Cases',
+            labels={'procedure': 'Procedure', 'total referrals': 'Total Referrals'},
+            text='total referrals'
+        )
+        st.plotly_chart(fig_top10_cases, use_container_width=True)
+
+        # Top 10 procedures by demand minutes
+        top10_minutes = procedure_specialty_df.nlargest(10, 'demand minutes')
+
+        # Chart - Top 10 procedure demand in minutes
+        st.subheader("Top 10 Procedures by Demand in Minutes")
+        fig_top10_minutes = px.bar(
+            top10_minutes,
+            x='procedure',
+            y='demand minutes',
+            title='Top 10 Procedures by Demand in Minutes',
+            labels={'procedure': 'Procedure', 'demand minutes': 'Demand Minutes'},
+            text='demand minutes'
+        )
+        st.plotly_chart(fig_top10_minutes, use_container_width=True)
 
     else:
         st.error("Waiting list data does not contain the required columns.")
