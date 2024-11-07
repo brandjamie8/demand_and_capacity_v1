@@ -79,6 +79,12 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
         baseline_start_date = pd.to_datetime(baseline_start_date).to_period('M').to_timestamp('M')
         baseline_end_date = pd.to_datetime(baseline_end_date).to_period('M').to_timestamp('M')
 
+        if st.session_state.baseline_start_date is None:
+            st.session_state.baseline_start_date = baseline_start_date
+
+        if st.session_state.baseline_end_date is None:
+            st.session_state.baseline_end_date = baseline_end_date
+        
         # Update fig1 to highlight the baseline period if dates are selected
         if baseline_start_date != baseline_end_date:
             fig1.add_vrect(
