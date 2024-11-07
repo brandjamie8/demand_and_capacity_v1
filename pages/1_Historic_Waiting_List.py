@@ -79,11 +79,16 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
         baseline_start_date = pd.to_datetime(baseline_start_date).to_period('M').to_timestamp('M')
         baseline_end_date = pd.to_datetime(baseline_end_date).to_period('M').to_timestamp('M')
 
+        baseline_months = (baseline_end_date.year - baseline_start_date.year) * 12 + (baseline_end_date.month - baseline_start_date.month)
+        
         if 'baseline_start_date' not in st.session_state:
             st.session_state.baseline_start_date = baseline_start_date
 
         if baseline_end_date not in st.session_state:
             st.session_state.baseline_end_date = baseline_end_date
+
+        if baseline_months not in st.session_state:
+            st.session_state.baseline_months = baseline_months
         
         # Update fig1 to highlight the baseline period if dates are selected
         if baseline_start_date != baseline_end_date:
