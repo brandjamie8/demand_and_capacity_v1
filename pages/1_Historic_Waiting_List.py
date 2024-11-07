@@ -84,10 +84,10 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
         if 'baseline_start_date' not in st.session_state:
             st.session_state.baseline_start_date = baseline_start_date
 
-        if baseline_end_date not in st.session_state:
+        if 'baseline_end_date' not in st.session_state:
             st.session_state.baseline_end_date = baseline_end_date
 
-        if baseline_months not in st.session_state:
+        if 'baseline_months' not in st.session_state:
             st.session_state.baseline_months = baseline_months
         
         # Update fig1 to highlight the baseline period if dates are selected
