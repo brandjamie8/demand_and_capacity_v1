@@ -132,11 +132,6 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
         end_demand = demand.iloc[-3:].mean() if len(demand) >= 3 else demand.iloc[-1]
         percentage_increase = ((end_demand - start_demand) / start_demand) * 100
         
-        # Suggest a multiplier based on the percentage increase
-        number_of_periods = len(demand)
-        average_monthly_increase = percentage_increase / number_of_periods
-        projected_multiplier = 1 + (average_monthly_increase / 100) * 12  # Projecting over 12 months
-        
         # Plot the demand and predicted demand
         fig_demand = go.Figure()
         
@@ -187,18 +182,18 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
         if p_value < 0.05:
             st.write("The trend is **statistically significant** (p < 0.05).")
             st.write("This means you should change the expected demand for next year.")
-            st.write(f"Suggested multiplier for next year's demand: {projected_multiplier:.2f}")
+            st.write(f"Suggested multiplier for next year's demand: {percentage_increase:.2f}")
         else:
             st.write("The trend is **not statistically significant** (p >= 0.05).")
             st.write("This means you may want change the expected demand for next year if you think it will be different.")
-            st.write(f"Suggested multiplier for next year's demand: Between 1 and {projected_multiplier:.2f}")
+            st.write(f"Suggested multiplier for next year's demand: Between 1 and {percentage_increase:.2f}")
         
 
         # Allow user to adjust the multiplier
         multiplier = st.number_input(
             "Adjust the Multiplier for Next Year's Demand",
             min_value=0.0,
-            value=round(projected_multiplier, 2),
+            value=round(percentage_increase, 2),
             step=0.1,
             key='demand_multiplier'
         )
