@@ -84,6 +84,9 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
         if not pd.api.types.is_datetime64_any_dtype(waiting_list_specialty_df['month']):
             waiting_list_specialty_df['month'] = pd.to_datetime(waiting_list_specialty_df['month'])
 
+        # Sort by month
+        waiting_list_specialty_df = waiting_list_specialty_df.sort_values('month')
+
         # --- NEW PART: Filter data for the 12 months before the baseline start date ---
         start_12_months_prior = pd.to_datetime(st.session_state.baseline_start_date) - pd.DateOffset(months=12)
         pre_baseline_df = waiting_list_specialty_df[
@@ -130,10 +133,8 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
 
             # --- NEW PART: Create a DataFrame for plotting the predicted vs actual baseline demand ---
             prediction_df = pd.DataFrame({
-                'month': baseline_df['month'],
-                'actual_demand': actual_baseline_demand,
-                'predicted_demand_regression': predicted_baseline_demand,
-                'predicted_demand_average': predicted_baseline_average
+                'month': waiting_list_specialty_df['month'],
+                'actual_demand': waiting_list_specialty_df['additions to waiting list']
             })
 
             # --- NEW PART: Plot the actual vs predicted demand for the baseline period ---
@@ -148,23 +149,44 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
                 line=dict(color='#f5136f')
             ))
 
-            # Add the predicted demand trace for regression
+            # Add the predicted demand trace for regression in the baseline period
             fig_baseline.add_trace(go.Scatter(
-                x=prediction_df['month'],
-                y=prediction_df['predicted_demand_regression'],
+                x=baseline_df['month'],
+                y=predicted_baseline_demand,
                 mode='lines',
                 name='Predicted Demand (Regression)',
                 line=dict(dash='dash')
             ))
 
-            # Add the predicted demand trace for average
+            # Add the predicted demand trace for average in the baseline period
             fig_baseline.add_trace(go.Scatter(
-                x=prediction_df['month'],
-                y=prediction_df['predicted_demand_average'],
+                x=baseline_df['month'],
+                y=predicted_baseline_average,
                 mode='lines',
                 name='Predicted Demand (Average)',
                 line=dict(dash='dot', color='blue')
             ))
+
+            # Highlight the baseline period
+            if baseline_start != baseline_end:
+                fig_baseline.add_vrect(
+                    x0=baseline_start,
+                    x1=baseline_end,
+                    fillcolor="LightGrey",
+                    opacity=0.5,
+                    layer="below",
+                    line_width=0,
+                )
+                fig_baseline.add_trace(
+                    go.Scatter(
+                        x=[baseline_start, baseline_end],
+                        y=[None, None],
+                        mode='markers',
+                        marker=dict(color='LightGrey'),
+                        name='Baseline Period',
+                        showlegend=True
+                    )
+                )
 
             # Update the layout with title and labels
             fig_baseline.update_layout(
@@ -209,15 +231,15 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
 
         # --- END OF NEW PART ---
 
-        # Plot the demand and predicted trend for the future period
+        # Plot the demand and predicted trend for the entire period, highlighting the baseline and future predictions
         fig_demand = go.Figure()
 
-        # Add the actual demand trace for the baseline period
+        # Add the actual demand trace for the entire available period
         fig_demand.add_trace(go.Scatter(
-            x=baseline_df['month'],
-            y=baseline_df['additions to waiting list'],
+            x=waiting_list_specialty_df['month'],
+            y=waiting_list_specialty_df['additions to waiting list'],
             mode='lines+markers',
-            name='Actual Demand (Baseline)',
+            name='Actual Demand',
             line=dict(color='#f5136f')
         ))
 
@@ -228,6 +250,27 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
             mode='lines',
             name=f'Predicted Demand ({prediction_method})'
         ))
+
+        # Highlight the baseline period
+        if baseline_start != baseline_end:
+            fig_demand.add_vrect(
+                x0=baseline_start,
+                x1=baseline_end,
+                fillcolor="LightGrey",
+                opacity=0.5,
+                layer="below",
+                line_width=0,
+            )
+            fig_demand.add_trace(
+                go.Scatter(
+                    x=[baseline_start, baseline_end],
+                    y=[None, None],
+                    mode='markers',
+                    marker=dict(color='LightGrey'),
+                    name='Baseline Period',
+                    showlegend=True
+                )
+            )
 
         # Update the layout with title and labels
         fig_demand.update_layout(
