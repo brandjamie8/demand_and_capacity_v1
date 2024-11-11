@@ -62,16 +62,16 @@ if 'procedure_df' in st.session_state and st.session_state.procedure_df is not N
         baseline_yearly_additions = (total_referrals_baseline / num_baseline_months) * 12
         st.write(f"**Baseline Year's Worth of Additions to Waiting List:** {baseline_yearly_additions:.0f}")
 
-
         # Calculate demand minutes for the baseline period
         baseline_procedure_df['demand minutes'] = baseline_procedure_df['total referrals'] * baseline_procedure_df['average duration']
         total_demand_minutes_baseline = baseline_procedure_df['demand minutes'].sum()
         
-        # Print the calculated demand in minutes for the baseline period
-        st.write(f"**Total Demand in Minutes during Baseline Period:** {total_demand_minutes_baseline:.0f} minutes")
+        # Scale total demand minutes to a year's worth of months
+        baseline_yearly_demand_minutes = (total_demand_minutes_baseline / num_baseline_months) * 12
+        st.write(f"**Baseline Year's Worth of Demand in Minutes:** {baseline_yearly_demand_minutes:.0f} minutes")
 
         # Message about next steps
-        st.write("The next step is to analyze the time series of additions to the waiting list to determine whether there is an increase over time.")
+        st.write("The next step is to analyse the time series of additions to the waiting list to determine whether there is an increase over time.")
 
         # Display total demand
         #total_demand_cases = procedure_specialty_df['total referrals'].sum()
