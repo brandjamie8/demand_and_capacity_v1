@@ -235,7 +235,7 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
 
             # --- NEW PART: Predict demand for the next 12 months ---
             future_months = pd.date_range(
-                start=st.session_state.baseline_end_date + pd.DateOffset(months=1),
+                start=st.session_state.model_start_date + pd.DateOffset(months=1),
                 periods=12,
                 freq='M'
             )
