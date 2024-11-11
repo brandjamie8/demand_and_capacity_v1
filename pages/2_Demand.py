@@ -79,50 +79,67 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
     waiting_list_required_columns = ['month', 'specialty', 'additions to waiting list']
     if all(column in waiting_list_df.columns for column in waiting_list_required_columns):
         # Use selected specialty from session state
+        # Initialize baseline dates in session state if they don't exist
+        if 'baseline_start_date' not in st.session_state:
+            st.session_state.baseline_start_date = pd.to_datetime(waiting_list_df['month']).min().date()
+        
+        if 'baseline_end_date' not in st.session_state:
+            st.session_state.baseline_end_date = pd.to_datetime(waiting_list_df['month']).max().date()
+        
+        # Allow the user to adjust baseline dates
+        st.session_state.baseline_start_date = st.date_input("Baseline Start Date", value=st.session_state.baseline_start_date)
+        st.session_state.baseline_end_date = st.date_input("Baseline End Date", value=st.session_state.baseline_end_date)
+        
+        # Filter waiting list data based on selected specialty
         selected_specialty = st.session_state.selected_specialty
-
-        # Filter data based on selected specialty
         waiting_list_specialty_df = waiting_list_df[waiting_list_df['specialty'] == selected_specialty]
-
+        
         # Convert 'month' column to datetime if not already
         if not pd.api.types.is_datetime64_any_dtype(waiting_list_specialty_df['month']):
             waiting_list_specialty_df['month'] = pd.to_datetime(waiting_list_specialty_df['month'])
-
+        
+        # Filter data based on baseline dates
+        filtered_df = waiting_list_specialty_df[
+            (waiting_list_specialty_df['month'] >= pd.to_datetime(st.session_state.baseline_start_date)) &
+            (waiting_list_specialty_df['month'] <= pd.to_datetime(st.session_state.baseline_end_date))
+        ]
+        
         # Sort by month
-        waiting_list_specialty_df = waiting_list_specialty_df.sort_values('month')
-
+        filtered_df = filtered_df.sort_values('month')
+        
         # Extract months and demand data
-        months = waiting_list_specialty_df['month']
-        demand = waiting_list_specialty_df['additions to waiting list']
-
+        months = filtered_df['month']
+        demand = filtered_df['additions to waiting list']
+        
         # Convert months to ordinal for regression analysis
         months_ordinal = months.map(pd.Timestamp.toordinal)
-
+        
         # Perform linear regression to assess trend
         slope, intercept, r_value, p_value, std_err = linregress(months_ordinal, demand)
-
+        
         # Calculate the predicted demand using the regression model
         predicted_demand = intercept + slope * months_ordinal
-
+        
         # Create a DataFrame for plotting
         regression_df = pd.DataFrame({
             'month': months,
             'demand': demand,
             'predicted_demand': predicted_demand
         })
-
+        
         # Calculate the percentage increase over the period
-        start_demand = demand.iloc[:3].mean()
-        end_demand = demand.iloc[-3:].mean()
+        start_demand = demand.iloc[:3].mean() if len(demand) >= 3 else demand.iloc[0]
+        end_demand = demand.iloc[-3:].mean() if len(demand) >= 3 else demand.iloc[-1]
         percentage_increase = ((end_demand - start_demand) / start_demand) * 100
-
+        
         # Suggest a multiplier based on the percentage increase
         number_of_periods = len(demand)
         average_monthly_increase = percentage_increase / number_of_periods
         projected_multiplier = 1 + (average_monthly_increase / 100) * 12  # Projecting over 12 months
-
+        
+        # Plot the demand and predicted demand
         fig_demand = go.Figure()
-      
+        
         # Add the actual demand trace
         fig_demand.add_trace(go.Scatter(
             x=regression_df['month'],
@@ -131,7 +148,7 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
             name='Additions to Waiting List',
             line=dict(color='#f5136f')
         ))
-      
+        
         # Add the predicted demand trace
         fig_demand.add_trace(go.Scatter(
             x=regression_df['month'],
@@ -139,7 +156,7 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
             mode='lines',
             name='Predicted Demand'
         ))
-      
+        
         # Update the layout with title and labels
         fig_demand.update_layout(
             title='Monthly Demand with Regression Line',
@@ -147,7 +164,8 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
             yaxis_title='Demand',
             legend_title='Legend'
         )
-      
+        
+        # Display the chart in Streamlit
         st.plotly_chart(fig_demand, use_container_width=True)
 
         st.write(f"Average demand in first 3 months: {start_demand:.0f}")
