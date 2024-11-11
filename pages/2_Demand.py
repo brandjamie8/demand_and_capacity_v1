@@ -307,6 +307,11 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
             # Display the chart in Streamlit
             st.plotly_chart(fig_demand, use_container_width=True)
 
+            # Summary of Total Predicted Demand
+            total_predicted_demand = future_df['predicted_demand'].sum()
+            st.write(f"**Total Predicted Demand over Next 12 Months:** {total_predicted_demand:.0f}")
+
+       
     else:
         st.error("Waiting list data does not contain the required columns.")
 else:
