@@ -226,8 +226,8 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
                 st.plotly_chart(fig_baseline, use_container_width=True)
 
                 # --- Display Errors and Conclusion ---
-                st.write(f"**Mean Absolute Error (Regression):** {error_regression:.2f}")
-                st.write(f"**Mean Absolute Error (Average):** {error_average:.2f}")
+                st.write(f"**Mean Absolute Error for Regression:** {error_regression:.2f}")
+                st.write(f"**Mean Absolute Error for Baseline Average:** {error_average:.2f}")
                 if use_average_for_prediction:
                     st.write("**Conclusion:** The average demand in the baseline period is more accurate for prediction compared to the trend.")
                 else:
