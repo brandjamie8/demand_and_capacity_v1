@@ -187,9 +187,29 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
                     'actual_demand': waiting_list_specialty_df['additions to waiting list']
                 })
 
+                historic_months_ordinal = pre_months_ordinal
+                fitted_historic_demand = intercept + slope * historic_months_ordinal
+                
                 # --- NEW PART: Plot the actual vs predicted demand for the baseline period ---
                 fig_baseline = go.Figure()
 
+                fig_baseline.add_trace(go.Scatter(
+                    x=pre_months,
+                    y=fitted_historic_demand,
+                    mode='lines',
+                    name='Fitted Regression Line (Historical)',
+                    line=dict(dash='dashdot', color='green')
+                ))
+                
+                # Add a trace for the average line in the historical data
+                fig_baseline.add_trace(go.Scatter(
+                    x=pre_months,
+                    y=[average_demand] * len(pre_months),
+                    mode='lines',
+                    name='Average Line (Historical)',
+                    line=dict(dash='dot', color='orange')
+                ))
+                
                 # Add the actual demand trace
                 fig_baseline.add_trace(go.Scatter(
                     x=prediction_df['month'],
