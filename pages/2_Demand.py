@@ -88,8 +88,11 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
         st.session_state.baseline_start_date = st.date_input("Baseline Start Date (Month End)", value=st.session_state.baseline_start_date)
         st.session_state.baseline_end_date = st.date_input("Baseline End Date (Month End)", value=st.session_state.baseline_end_date)
 
+        baseline_start = pd.Timestamp(st.session_state.baseline_start_date)
+        baseline_end = pd.Timestamp(st.session_state.baseline_end_date)
+        
         # Require a baseline period of at least 6 months
-        if st.session_state.baseline_end_date <= pd.Timestamp(st.session_state.baseline_start_date + pd.DateOffset(months=5)):
+        if baseline_end <= baseline_start + pd.DateOffset(months=5):
             st.warning("The baseline period must be at least 6 months.")
         else:
             # Filter waiting list data based on selected specialty
