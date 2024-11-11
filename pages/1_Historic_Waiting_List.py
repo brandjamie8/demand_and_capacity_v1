@@ -68,7 +68,7 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
         with col1:
             baseline_start_date = st.date_input(
                 'Baseline Start Date',
-                value = max_date - pd.DateOffset(months=6)
+                value = max_date - pd.DateOffset(months=5)
             )
         with col2:
             baseline_end_date = st.date_input(
