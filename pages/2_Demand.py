@@ -110,10 +110,10 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
             waiting_list_specialty_df = waiting_list_specialty_df.sort_values('month')
 
             # --- NEW PART: Filter data for the 12 months before the baseline start date ---
-            start_12_months_prior = st.session_state.baseline_start_date - pd.DateOffset(months=12)
+            start_12_months_prior = baseline_start - pd.DateOffset(months=12)
             pre_baseline_df = waiting_list_specialty_df[
                 (waiting_list_specialty_df['month'] >= start_12_months_prior) &
-                (waiting_list_specialty_df['month'] < st.session_state.baseline_start_date)
+                (waiting_list_specialty_df['month'] < baseline_start)
             ]
 
             # Ensure there are enough data points for regression
