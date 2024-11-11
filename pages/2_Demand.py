@@ -3,6 +3,9 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
+from scipy.stats import linregress
+import numpy as np
 
 st.title("Demand")
 
@@ -44,23 +47,6 @@ if 'procedure_df' in st.session_state and st.session_state.procedure_df is not N
 
         st.write(f"**Total Demand (Cases):** {total_demand_cases:.0f}")
         st.write(f"**Total Demand (Minutes):** {total_demand_minutes:.0f}")
-
-        # Apply multiplier if available
-        if 'multiplier' in st.session_state:
-            multiplier = st.session_state.multiplier
-            projected_demand_cases = total_demand_cases * multiplier
-            projected_demand_minutes = total_demand_minutes * multiplier
-
-            st.write(f"**Projected Demand for Next Year (Cases):** {projected_demand_cases:.0f}")
-            st.write(f"**Projected Demand for Next Year (Minutes):** {projected_demand_minutes:.0f}")
-
-            # Save projected demand to session state
-            st.session_state.projected_demand_cases = projected_demand_cases
-            st.session_state.projected_demand_minutes = projected_demand_minutes
-    else:
-        st.error("Uploaded file does not contain the required columns.")
-else:
-    st.write("Please upload the Procedure Data CSV file on the **Home** page.")
 
 import plotly.graph_objects as go
 from scipy.stats import linregress
@@ -130,17 +116,24 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
             baseline_months_ordinal = baseline_df['month'].map(pd.Timestamp.toordinal)
             predicted_baseline_demand = intercept + slope * baseline_months_ordinal
 
+            # --- NEW PART: Predict using the average from pre-baseline ---
+            average_demand = pre_demand.mean()
+            predicted_baseline_average = [average_demand] * len(baseline_months_ordinal)
+
             # --- NEW PART: Calculate the error between actual and predicted demand ---
             actual_baseline_demand = baseline_df['additions to waiting list']
-            error = actual_baseline_demand - predicted_baseline_demand
-            mae = np.mean(np.abs(error))  # Mean Absolute Error
+            error_regression = np.abs(actual_baseline_demand - predicted_baseline_demand).mean()
+            error_average = np.abs(actual_baseline_demand - predicted_baseline_average).mean()
+
+            # Determine which method is more predictive
+            use_average_for_prediction = error_average < error_regression
 
             # --- NEW PART: Create a DataFrame for plotting the predicted vs actual baseline demand ---
             prediction_df = pd.DataFrame({
                 'month': baseline_df['month'],
                 'actual_demand': actual_baseline_demand,
-                'predicted_demand': predicted_baseline_demand,
-                'error': error
+                'predicted_demand_regression': predicted_baseline_demand,
+                'predicted_demand_average': predicted_baseline_average
             })
 
             # --- NEW PART: Plot the actual vs predicted demand for the baseline period ---
@@ -155,13 +148,22 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
                 line=dict(color='#f5136f')
             ))
 
-            # Add the predicted demand trace
+            # Add the predicted demand trace for regression
             fig_baseline.add_trace(go.Scatter(
                 x=prediction_df['month'],
-                y=prediction_df['predicted_demand'],
+                y=prediction_df['predicted_demand_regression'],
                 mode='lines',
-                name='Predicted Demand',
+                name='Predicted Demand (Regression)',
                 line=dict(dash='dash')
+            ))
+
+            # Add the predicted demand trace for average
+            fig_baseline.add_trace(go.Scatter(
+                x=prediction_df['month'],
+                y=prediction_df['predicted_demand_average'],
+                mode='lines',
+                name='Predicted Demand (Average)',
+                line=dict(dash='dot', color='blue')
             ))
 
             # Update the layout with title and labels
@@ -174,7 +176,7 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
                     x=0.5,
                     y=-0.3,
                     showarrow=False,
-                    text=f"Mean Absolute Error: {mae:.2f}",
+                    text=f"MAE (Regression): {error_regression:.2f}, MAE (Average): {error_average:.2f}",
                     xref="paper",
                     yref="paper"
                 )]
@@ -185,58 +187,51 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
 
         # --- END OF NEW PART ---
 
-        # Filter data based on baseline dates for trend analysis
-        filtered_df = waiting_list_specialty_df[
-            (waiting_list_specialty_df['month'] >= pd.to_datetime(st.session_state.baseline_start_date)) &
-            (waiting_list_specialty_df['month'] <= pd.to_datetime(st.session_state.baseline_end_date))
-        ]
+        # --- NEW PART: Predict demand for the next 12 months ---
+        future_months = pd.date_range(
+            start=st.session_state.baseline_end_date + pd.DateOffset(months=1),
+            periods=12,
+            freq='M'
+        )
         
-        # Sort by month
-        filtered_df = filtered_df.sort_values('month')
-        
-        # Extract months and demand data
-        months = filtered_df['month']
-        demand = filtered_df['additions to waiting list']
-        
-        # Convert months to ordinal for regression analysis
-        months_ordinal = months.map(pd.Timestamp.toordinal)
-        
-        # Perform linear regression to assess trend
-        slope, intercept, r_value, p_value, std_err = linregress(months_ordinal, demand)
-        
-        # Calculate the predicted demand using the regression model
-        predicted_demand = intercept + slope * months_ordinal
-        
-        # Create a DataFrame for plotting
-        regression_df = pd.DataFrame({
-            'month': months,
-            'demand': demand,
-            'predicted_demand': predicted_demand
+        if use_average_for_prediction:
+            future_demand = [average_demand] * len(future_months)
+            prediction_method = "Average"
+        else:
+            future_months_ordinal = future_months.map(pd.Timestamp.toordinal)
+            future_demand = intercept + slope * future_months_ordinal
+            prediction_method = "Regression"
+
+        future_df = pd.DataFrame({
+            'month': future_months,
+            'predicted_demand': future_demand
         })
 
-        # Plot the demand and predicted demand
+        # --- END OF NEW PART ---
+
+        # Plot the demand and predicted trend for the future period
         fig_demand = go.Figure()
 
-        # Add the actual demand trace
+        # Add the actual demand trace for the baseline period
         fig_demand.add_trace(go.Scatter(
-            x=regression_df['month'],
-            y=regression_df['demand'],
+            x=baseline_df['month'],
+            y=baseline_df['additions to waiting list'],
             mode='lines+markers',
-            name='Additions to Waiting List',
+            name='Actual Demand (Baseline)',
             line=dict(color='#f5136f')
         ))
 
-        # Add the predicted demand trace
+        # Add the predicted future demand trace
         fig_demand.add_trace(go.Scatter(
-            x=regression_df['month'],
-            y=regression_df['predicted_demand'],
+            x=future_df['month'],
+            y=future_df['predicted_demand'],
             mode='lines',
-            name='Predicted Demand'
+            name=f'Predicted Demand ({prediction_method})'
         ))
 
         # Update the layout with title and labels
         fig_demand.update_layout(
-            title='Monthly Demand with Regression Line',
+            title='Monthly Demand with Predicted Trend for Next 12 Months',
             xaxis_title='Month',
             yaxis_title='Demand',
             legend_title='Legend'
