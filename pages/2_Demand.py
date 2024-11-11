@@ -192,24 +192,6 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
                 
                 # --- NEW PART: Plot the actual vs predicted demand for the baseline period ---
                 fig_baseline = go.Figure()
-
-                fig_baseline.add_trace(go.Scatter(
-                    x=pre_months,
-                    y=fitted_historic_demand,
-                    mode='lines',
-                    name='Fitted Regression Line (Historical)',
-                    line=dict(dash='dashdot', color='green')
-                ))
-                
-                # Add a trace for the average line in the historical data
-                fig_baseline.add_trace(go.Scatter(
-                    x=pre_months,
-                    y=[average_demand] * len(pre_months),
-                    mode='lines',
-                    name='Average Line (Historical)',
-                    line=dict(dash='dot', color='orange')
-                ))
-                
                 # Add the actual demand trace
                 fig_baseline.add_trace(go.Scatter(
                     x=prediction_df['month'],
@@ -218,6 +200,29 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
                     name='Actual Demand',
                     line=dict(color='#f5136f')
                 ))
+                # Add a trace for the average line in the historical data
+                fig_baseline.add_trace(go.Scatter(
+                    x=pre_months,
+                    y=[average_demand] * len(pre_months),
+                    mode='lines',
+                    name='Average Line (Historical)',
+                    line=dict(color='orange')
+                ))           
+                # Add the predicted demand trace for average in the baseline period
+                fig_baseline.add_trace(go.Scatter(
+                    x=baseline_df['month'],
+                    y=predicted_baseline_average,
+                    mode='lines',
+                    name='Predicted Demand (Average)',
+                    line=dict(dash='dash', color='orange')
+                ))                
+                fig_baseline.add_trace(go.Scatter(
+                    x=pre_months,
+                    y=fitted_historic_demand,
+                    mode='lines',
+                    name='Fitted Regression Line (Historical)',
+                    line=dict(color='blue')
+                ))
 
                 # Add the predicted demand trace for regression in the baseline period
                 fig_baseline.add_trace(go.Scatter(
@@ -225,16 +230,7 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
                     y=predicted_baseline_demand,
                     mode='lines',
                     name='Predicted Demand (Regression)',
-                    line=dict(dash='dash')
-                ))
-
-                # Add the predicted demand trace for average in the baseline period
-                fig_baseline.add_trace(go.Scatter(
-                    x=baseline_df['month'],
-                    y=predicted_baseline_average,
-                    mode='lines',
-                    name='Predicted Demand (Average)',
-                    line=dict(dash='dot', color='blue')
+                    line=dict(color='blue', dash='dash')
                 ))
 
                 # Highlight the baseline period
