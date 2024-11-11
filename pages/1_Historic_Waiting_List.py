@@ -139,16 +139,23 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
         """)
 
            
+        # Check if 'model_start_date' is already in session state
+        if 'model_start_date' not in st.session_state:
+            # Initialize with default value if not set
+            st.session_state.model_start_date = waiting_list_specialty_df['month'].max()
+        
+        # Use the value from session state for the date input
         model_start_date = st.date_input(
             'Start Date for Modeling',
-            value=waiting_list_specialty_df['month'].max()
+            value=st.session_state.model_start_date
         )
-
+        
+        # Update session state with the selected date
+        st.session_state.model_start_date = model_start_date
+        
         # Convert modeling start date to datetime
-        model_start_date = pd.to_datetime(model_start_date).to_period('M').to_timestamp('M')
+        model_start_date = pd.to_datetime(st.session_state.model_start_date).to_period('M').to_timestamp('M')
 
-        if 'model_start_date' not in st.session_state:
-            st.session_state.model_start_date = model_start_date
         
         # Latest month in the data
         latest_month_in_data = waiting_list_specialty_df['month'].max()
