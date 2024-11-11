@@ -271,7 +271,7 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
             fig_demand.add_trace(go.Scatter(
                 x=future_df['month'],
                 y=future_df['predicted_demand'],
-                mode='lines',
+                mode='lines+markers',
                 name=f'Predicted Demand ({prediction_method})'
             ))
 
