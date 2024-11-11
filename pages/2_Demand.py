@@ -367,26 +367,9 @@ if 'procedure_df' in st.session_state and st.session_state.procedure_df is not N
     required_columns = ['specialty', 'procedure', 'total referrals', 'average duration']
     if all(column in procedure_df.columns for column in required_columns):
         st.subheader("Procedure Demand")
-        # Use selected specialty from session state
-        specialties = procedure_df['specialty'].unique()
-        if 'selected_specialty' not in st.session_state or st.session_state.selected_specialty not in specialties:
-            st.session_state.selected_specialty = specialties[0]
-
-        selected_specialty = st.selectbox(
-            'Select Specialty',
-            specialties,
-            index=list(specialties).index(st.session_state.selected_specialty),
-            key='procedure_demand_specialty_select'
-        )
-
-        # Save the selected specialty to session state
-        st.session_state.selected_specialty = selected_specialty
-
-        # Filter data based on selected specialty
-        procedure_specialty_df = procedure_df[procedure_df['specialty'] == selected_specialty]
-
+      
         # Calculate demand minutes
-        procedure_specialty_df['demand minutes'] = procedure_specialty_df['total referrals'] * procedure_specialty_df['average duration'] * 60
+        procedure_specialty_df['demand minutes'] = procedure_specialty_df['total referrals'] * procedure_specialty_df['average duration']
 
         # Save the filtered DataFrame in session state for use in other pages
         st.session_state.procedure_specialty_df = procedure_specialty_df
