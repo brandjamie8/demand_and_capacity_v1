@@ -97,8 +97,95 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
         # Convert 'month' column to datetime if not already
         if not pd.api.types.is_datetime64_any_dtype(waiting_list_specialty_df['month']):
             waiting_list_specialty_df['month'] = pd.to_datetime(waiting_list_specialty_df['month'])
-        
-        # Filter data based on baseline dates
+
+        # --- NEW PART: Filter data for the 12 months before the baseline start date ---
+        start_12_months_prior = pd.to_datetime(st.session_state.baseline_start_date) - pd.DateOffset(months=12)
+        pre_baseline_df = waiting_list_specialty_df[
+            (waiting_list_specialty_df['month'] >= start_12_months_prior) &
+            (waiting_list_specialty_df['month'] < pd.to_datetime(st.session_state.baseline_start_date))
+        ]
+
+        # Ensure there are enough data points for regression
+        if len(pre_baseline_df) < 2:
+            st.warning("Not enough data points in the 12 months before the baseline start date for regression analysis.")
+        else:
+            # --- NEW PART: Extract months and demand data from the 12 months prior to the baseline ---
+            pre_months = pre_baseline_df['month']
+            pre_demand = pre_baseline_df['additions to waiting list']
+
+            # Convert months to ordinal for regression analysis
+            pre_months_ordinal = pre_months.map(pd.Timestamp.toordinal)
+
+            # --- NEW PART: Perform linear regression to assess trend for the pre-baseline period ---
+            slope, intercept, r_value, p_value, std_err = linregress(pre_months_ordinal, pre_demand)
+
+            # --- NEW PART: Predict demand for the baseline period using the trained model ---
+            baseline_start = pd.to_datetime(st.session_state.baseline_start_date)
+            baseline_end = pd.to_datetime(st.session_state.baseline_end_date)
+            baseline_df = waiting_list_specialty_df[
+                (waiting_list_specialty_df['month'] >= baseline_start) &
+                (waiting_list_specialty_df['month'] <= baseline_end)
+            ]
+
+            baseline_months_ordinal = baseline_df['month'].map(pd.Timestamp.toordinal)
+            predicted_baseline_demand = intercept + slope * baseline_months_ordinal
+
+            # --- NEW PART: Calculate the error between actual and predicted demand ---
+            actual_baseline_demand = baseline_df['additions to waiting list']
+            error = actual_baseline_demand - predicted_baseline_demand
+            mae = np.mean(np.abs(error))  # Mean Absolute Error
+
+            # --- NEW PART: Create a DataFrame for plotting the predicted vs actual baseline demand ---
+            prediction_df = pd.DataFrame({
+                'month': baseline_df['month'],
+                'actual_demand': actual_baseline_demand,
+                'predicted_demand': predicted_baseline_demand,
+                'error': error
+            })
+
+            # --- NEW PART: Plot the actual vs predicted demand for the baseline period ---
+            fig_baseline = go.Figure()
+
+            # Add the actual demand trace
+            fig_baseline.add_trace(go.Scatter(
+                x=prediction_df['month'],
+                y=prediction_df['actual_demand'],
+                mode='lines+markers',
+                name='Actual Demand',
+                line=dict(color='#f5136f')
+            ))
+
+            # Add the predicted demand trace
+            fig_baseline.add_trace(go.Scatter(
+                x=prediction_df['month'],
+                y=prediction_df['predicted_demand'],
+                mode='lines',
+                name='Predicted Demand',
+                line=dict(dash='dash')
+            ))
+
+            # Update the layout with title and labels
+            fig_baseline.update_layout(
+                title='Predicted vs Actual Demand for Baseline Period',
+                xaxis_title='Month',
+                yaxis_title='Demand',
+                legend_title='Legend',
+                annotations=[dict(
+                    x=0.5,
+                    y=-0.3,
+                    showarrow=False,
+                    text=f"Mean Absolute Error: {mae:.2f}",
+                    xref="paper",
+                    yref="paper"
+                )]
+            )
+
+            # Display the chart in Streamlit
+            st.plotly_chart(fig_baseline, use_container_width=True)
+
+        # --- END OF NEW PART ---
+
+        # Filter data based on baseline dates for trend analysis
         filtered_df = waiting_list_specialty_df[
             (waiting_list_specialty_df['month'] >= pd.to_datetime(st.session_state.baseline_start_date)) &
             (waiting_list_specialty_df['month'] <= pd.to_datetime(st.session_state.baseline_end_date))
@@ -126,17 +213,10 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
             'demand': demand,
             'predicted_demand': predicted_demand
         })
-        
-        # Calculate the percentage increase over the period
-        start_demand = demand.iloc[:3].mean() if len(demand) >= 3 else demand.iloc[0]
-        end_demand = demand.iloc[-3:].mean() if len(demand) >= 3 else demand.iloc[-1]
-        percentage_increase = ((end_demand - start_demand) / start_demand) 
-        percentage_increase_of_100 = percentage_increase * 100
-        percentage_increase_multiplier = 1 + percentage_increase
-        
+
         # Plot the demand and predicted demand
         fig_demand = go.Figure()
-        
+
         # Add the actual demand trace
         fig_demand.add_trace(go.Scatter(
             x=regression_df['month'],
@@ -145,7 +225,7 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
             name='Additions to Waiting List',
             line=dict(color='#f5136f')
         ))
-        
+
         # Add the predicted demand trace
         fig_demand.add_trace(go.Scatter(
             x=regression_df['month'],
@@ -153,7 +233,7 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
             mode='lines',
             name='Predicted Demand'
         ))
-        
+
         # Update the layout with title and labels
         fig_demand.update_layout(
             title='Monthly Demand with Regression Line',
@@ -161,141 +241,11 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
             yaxis_title='Demand',
             legend_title='Legend'
         )
-        
+
         # Display the chart in Streamlit
         st.plotly_chart(fig_demand, use_container_width=True)
-
-        st.write(f"Average demand in first 3 months: {start_demand:.0f}")
-        st.write(f"Average demand in last 3 months: {end_demand:.0f}")
-        st.write(f"Percentage difference between start and end of year: {percentage_increase_of_100:.2f}%")
-
-        # Assess statistical significance
-        st.write(f"Linear Regression Results:")
-
-        col1, col2, col3 = st.columns(3)
-
-        with col1:
-           st.write(f"Slope: {slope:.3f}")
-           st.write(f"Intercept: {intercept:.3f}")
-        with col2:
-           st.write(f"R-squared: {r_value**2:.3f}")
-           st.write(f"P-value: {p_value:.3e}")
-
-        if p_value < 0.05:
-            st.write("The trend is **statistically significant** (p < 0.05).")
-            st.write("This means you should change the expected demand for next year.")
-            st.write(f"Suggested multiplier for next year's demand: {percentage_increase_multiplier:.2f}")
-        else:
-            st.write("The trend is **not statistically significant** (p >= 0.05).")
-            st.write("This means you may want change the expected demand for next year if you think it will be different.")
-            st.write(f"Suggested multiplier for next year's demand: Between 1 and {percentage_increase_multiplier:.2f}")
-        
-
-        # Allow user to adjust the multiplier
-        multiplier = st.number_input(
-            "Adjust the Multiplier for Next Year's Demand",
-            min_value=0.0,
-            value=round(percentage_increase_multiplier, 2),
-            step=0.01,
-            key='demand_multiplier'
-        )
-
-        # Calculate projected demand for next year
-        total_demand_current_year = demand.sum()
-        projected_demand_next_year = int(round(total_demand_current_year * multiplier))
-        
-        st.write(f"")
-        st.write(f"**Total Demand for Current Year:** {total_demand_current_year:.0f}")
-        st.write(f"**Projected Demand for Next Year (Rounded to Whole Number):** {projected_demand_next_year}")
-
-        # Save projected demand to session state
-        st.session_state.multiplier = multiplier
-        st.session_state.total_demand_current_year = total_demand_current_year
-        st.session_state.projected_demand_next_year = projected_demand_next_year
-
-        # Calculate additional demand
-        additional_demand = projected_demand_next_year - total_demand_current_year
-        st.write(f"**Additional Demand for Next Year:** {additional_demand}")
-
-        # Distribute additional demand among procedures based on their probability distribution
-        procedure_specialty_df = procedure_specialty_df.copy()
-        total_referrals = procedure_specialty_df['total referrals'].sum()
-        procedure_specialty_df['probability'] = procedure_specialty_df['total referrals'] / total_referrals
-
-        # Calculate additional cases per procedure
-        procedure_specialty_df['additional cases'] = procedure_specialty_df['probability'] * additional_demand
-        procedure_specialty_df['additional cases'] = procedure_specialty_df['additional cases'].round().astype(int)
-
-        # Ensure the sum of additional cases equals the additional demand
-        total_additional_cases = procedure_specialty_df['additional cases'].sum()
-        difference = additional_demand - total_additional_cases
-
-        # Adjust for any rounding differences
-        if difference != 0:
-            indices = procedure_specialty_df.index.tolist()
-            for i in range(abs(difference)):
-                idx = indices[i % len(indices)]
-                if difference > 0:
-                    procedure_specialty_df.at[idx, 'additional cases'] += 1
-                else:
-                    if procedure_specialty_df.at[idx, 'additional cases'] > 0:
-                        procedure_specialty_df.at[idx, 'additional cases'] -= 1
-
-        # Calculate additional minutes per procedure
-        procedure_specialty_df['additional minutes'] = procedure_specialty_df['additional cases'] * procedure_specialty_df['average duration']
-
-        # Save the updated DataFrame to session state
-        st.session_state.procedure_specialty_df = procedure_specialty_df
-
-        # Display bar chart comparing current year and next year's projected demand
-        st.subheader("Current Year Demand vs. Projected Next Year Demand")
-        demand_comparison_df = pd.DataFrame({
-            'Year': ['Current Year', 'Next Year (Projected)'],
-            'Total Demand': [total_demand_current_year, projected_demand_next_year]
-        })
-        fig_comparison = px.bar(
-            demand_comparison_df,
-            x='Year',
-            y='Total Demand',
-            text='Total Demand',
-            title='Demand Comparison'
-        )
-        st.plotly_chart(fig_comparison, use_container_width=True)
-
-
-        # Top 10 procedures by total referrals
-        top10_cases = procedure_specialty_df.nlargest(10, 'total referrals')
-
-        # Chart - Top 10 procedure demand in cases
-        st.subheader("Top 10 Procedures by Demand in Cases")
-        fig_top10_cases = px.bar(
-            top10_cases,
-            x='procedure',
-            y='total referrals',
-            title='Top 10 Procedures by Demand in Cases',
-            labels={'procedure': 'Procedure', 'total referrals': 'Total Referrals'},
-            text='total referrals'
-        )
-        st.plotly_chart(fig_top10_cases, use_container_width=True)
-
-        # Top 10 procedures by demand minutes
-        top10_minutes = procedure_specialty_df.nlargest(10, 'demand minutes')
-
-        # Chart - Top 10 procedure demand in minutes
-        st.subheader("Top 10 Procedures by Demand in Minutes")
-        fig_top10_minutes = px.bar(
-            top10_minutes,
-            x='procedure',
-            y='demand minutes',
-            title='Top 10 Procedures by Demand in Minutes',
-            labels={'procedure': 'Procedure', 'demand minutes': 'Demand Minutes'},
-            text='demand minutes'
-        )
-        st.plotly_chart(fig_top10_minutes, use_container_width=True)
 
     else:
         st.error("Waiting list data does not contain the required columns.")
 else:
     st.write("Please ensure you have uploaded the required data and completed previous sections.")
-
-
