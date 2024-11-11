@@ -137,8 +137,6 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
                 slope, intercept, r_value, p_value, std_err = linregress(pre_months_ordinal, pre_demand)
 
                 # --- NEW PART: Predict demand for the baseline period using the trained model ---
-                baseline_start = st.session_state.baseline_start_date
-                baseline_end = st.session_state.baseline_end_date
                 baseline_df = waiting_list_specialty_df[
                     (waiting_list_specialty_df['month'] >= baseline_start) &
                     (waiting_list_specialty_df['month'] <= baseline_end)
