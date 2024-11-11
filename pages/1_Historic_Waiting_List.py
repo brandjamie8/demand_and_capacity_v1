@@ -147,6 +147,9 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
         # Convert modeling start date to datetime
         model_start_date = pd.to_datetime(model_start_date).to_period('M').to_timestamp('M')
 
+        if 'model_start_date' not in st.session_state:
+            st.session_state.model_start_date = model_start_date
+        
         # Latest month in the data
         latest_month_in_data = waiting_list_specialty_df['month'].max()
 
