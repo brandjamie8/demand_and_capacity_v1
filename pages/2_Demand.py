@@ -195,8 +195,8 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
         multiplier = st.number_input(
             "Adjust the Multiplier for Next Year's Demand",
             min_value=0.0,
-            value=round(percentage_increase_of_100, 2),
-            step=0.1,
+            value=round(percentage_increase_multiplier, 2),
+            step=0.01,
             key='demand_multiplier'
         )
 
