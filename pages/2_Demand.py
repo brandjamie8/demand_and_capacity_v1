@@ -6,14 +6,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 from scipy.stats import linregress
 import numpy as np
-# pages/2_Procedure_Demand.py
-
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-from scipy.stats import linregress
-import numpy as np
 
 st.title("Demand")
 
@@ -49,6 +41,28 @@ if 'procedure_df' in st.session_state and st.session_state.procedure_df is not N
         # Save the filtered DataFrame in session state for use in other pages
         st.session_state.procedure_specialty_df = procedure_specialty_df
 
+        # --- NEW PART: Display Baseline Period Information ---
+        baseline_start = pd.to_datetime(st.session_state.baseline_start_date)
+        baseline_end = pd.to_datetime(st.session_state.baseline_end_date)
+        num_baseline_months = (baseline_end.to_period('M') - baseline_start.to_period('M')).n + 1
+        
+        st.write(f"**Baseline Period:** {baseline_start.strftime('%B %Y')} to {baseline_end.strftime('%B %Y')}")
+        st.write(f"**Number of Months in Baseline:** {num_baseline_months} months")
+        
+        # Calculate total referrals during the baseline period from the procedure DataFrame
+        baseline_procedure_df = procedure_specialty_df[
+            (procedure_specialty_df['month'] >= baseline_start) &
+            (procedure_specialty_df['month'] <= baseline_end)
+        ]
+        total_referrals_baseline = baseline_procedure_df['total referrals'].sum()
+        
+        # Scale total referrals to a year's worth of months
+        baseline_yearly_additions = (total_referrals_baseline / num_baseline_months) * 12
+        st.write(f"**Baseline Year's Worth of Additions to Waiting List:** {baseline_yearly_additions:.0f}")
+
+
+
+        
         # Display total demand
         total_demand_cases = procedure_specialty_df['total referrals'].sum()
         total_demand_minutes = procedure_specialty_df['demand minutes'].sum()
