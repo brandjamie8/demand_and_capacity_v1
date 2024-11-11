@@ -138,11 +138,22 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
         Select the date from which you want the model to start predicting the waiting list size. This date should be after the latest month in the data.
         """)
 
-           
+        # Get the maximum date from the DataFrame
+        max_date = waiting_list_specialty_df['month'].max()
+        
+        # Calculate the next March after max_date
+        if max_date.month >= 3:
+            next_march_year = max_date.year + 1
+        else:
+            next_march_year = max_date.year
+        
+        # Set the last day of March as the default value
+        default_model_start_date = pd.Timestamp(year=next_march_year, month=3, day=31)
+        
         # Check if 'model_start_date' is already in session state
         if 'model_start_date' not in st.session_state:
             # Initialize with default value if not set
-            st.session_state.model_start_date = waiting_list_specialty_df['month'].max()
+            st.session_state.model_start_date = default_model_start_date
         
         # Use the value from session state for the date input
         model_start_date = st.date_input(
@@ -155,6 +166,7 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
         
         # Convert modeling start date to datetime
         model_start_date = pd.to_datetime(st.session_state.model_start_date).to_period('M').to_timestamp('M')
+
 
         
         # Latest month in the data
