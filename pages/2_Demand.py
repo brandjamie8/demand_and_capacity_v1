@@ -88,8 +88,8 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
         st.session_state.baseline_start_date = st.date_input("Baseline Start Date (Month End)", value=st.session_state.baseline_start_date)
         st.session_state.baseline_end_date = st.date_input("Baseline End Date (Month End)", value=st.session_state.baseline_end_date)
 
-        baseline_start = pd.Timestamp(st.session_state.baseline_start_date)
-        baseline_end = pd.Timestamp(st.session_state.baseline_end_date)
+        baseline_start_date = pd.to_datetime(baseline_start_date).to_period('M').to_timestamp('M')
+        baseline_end_date = pd.to_datetime(baseline_end_date).to_period('M').to_timestamp('M')
         
         # Require a baseline period of at least 6 months
         if baseline_end <= baseline_start + pd.DateOffset(months=5):
