@@ -64,11 +64,11 @@ if 'procedure_df' in st.session_state and st.session_state.procedure_df is not N
 
         
         # Display total demand
-        total_demand_cases = procedure_specialty_df['total referrals'].sum()
-        total_demand_minutes = procedure_specialty_df['demand minutes'].sum()
+        #total_demand_cases = procedure_specialty_df['total referrals'].sum()
+        #total_demand_minutes = procedure_specialty_df['demand minutes'].sum()
 
-        st.write(f"**Total Demand (Cases):** {total_demand_cases:.0f}")
-        st.write(f"**Total Demand (Minutes):** {total_demand_minutes:.0f}")
+        #st.write(f"**Total Demand (Cases):** {total_demand_cases:.0f}")
+        #st.write(f"**Total Demand (Minutes):** {total_demand_minutes:.0f}")
 
 import plotly.graph_objects as go
 from scipy.stats import linregress
