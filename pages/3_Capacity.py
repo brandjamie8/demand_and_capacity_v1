@@ -235,6 +235,8 @@ st.session_state.session_minutes_last_year = session_minutes_last_year
 if 'procedure_df' in st.session_state and st.session_state.procedure_df is not None:
     procedure_df = st.session_state.procedure_df
 
+    procedure_df = procedure_df[procedure_df['specialty'] == selected_specialty]
+
 # Monte Carlo Simulation for Procedures in the New Model
 st.header("Monte Carlo Simulation: Procedures in New Model")
 
