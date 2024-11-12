@@ -1,10 +1,12 @@
 import streamlit as st
 import pandas as pd
 
-st.title("Sessions Last Year")
+st.title("Capacity")
 
 st.write("""
-In this section, you can input variables related to last year's sessions,
+In this section, you can look at the number of cases and sessions in the baseline period, 
+what this would mean in whole-year terms and build a session
+input variables related to last year's sessions,
 such as weeks per year, sessions per week, utilisation percentage, and session duration.
 The app will calculate the total sessions and session minutes for last year.
 """)
@@ -78,13 +80,47 @@ st.write(f"**Baseline Utilisation Percentage:** {baseline_utilisation:.2%}")
 st.write(f"**Baseline Average Cases Per Session:** {cases_per_session:.2f}")
 
 
+# Calculate the sessions per week on weeks model
+sessions_in_42wk_model = total_sessions_12_months / 42
+sessions_in_45wk_model = total_sessions_12_months / 45
+sessions_in_48wk_model = total_sessions_12_months / 48
+
+# Get custom weeks input
+custom_weeks = st.number_input(
+    "Enter Custom Number of Weeks",
+    min_value=1,
+    max_value=52,
+    value=52,
+    step=1,
+    key='input_custom_weeks'
+)
+sessions_in_custom_weeks_model = total_sessions_12_months / custom_weeks
+
+# Create a DataFrame to display the results in a table
+summary_data = {
+    'Metric': ['Total Cases', 'Total Sessions', 'Total Minutes Utilised'],
+    '12-Month Equivalent': [total_cases_12_months, total_sessions_12_months, total_minutes_12_months],
+    'Sessions in 42 Week Model': [None, sessions_in_42wk_model, None],
+    'Sessions in 45 Week Model': [None, sessions_in_45wk_model, None],
+    'Sessions in 48 Week Model': [None, sessions_in_48wk_model, None],
+    f'Sessions in {custom_weeks} Week Model': [None, sessions_in_custom_weeks_model, None]
+}
+
+summary_df = pd.DataFrame(summary_data)
+
+# Display the summary DataFrame as a table
+st.header("Summary Statistics Table")
+st.table(summary_df)
+
 # Display scaled-up values equivalent to 12 months
 st.header("Equivalent 12-Month Period Statistics")
 st.write(f"**Total Cases (12-Month Equivalent):** {total_cases_12_months:.0f}")
 st.write(f"**Total Sessions (12-Month Equivalent):** {total_sessions_12_months:.0f}")
 st.write(f"**Total Minutes Utilised (12-Month Equivalent):** {total_minutes_12_months:.0f}")
 
-# Initialize session state variables if they don't exist
+
+
+# Initialise session state variables if they don't exist
 if 'weeks_last_year' not in st.session_state:
     st.session_state.weeks_last_year = 48
 
