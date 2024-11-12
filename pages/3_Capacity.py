@@ -229,3 +229,58 @@ with col2:
 # Save calculations to session state
 st.session_state.total_sessions_last_year = total_sessions_last_year
 st.session_state.session_minutes_last_year = session_minutes_last_year
+
+
+# Monte Carlo Simulation for Procedures in the New Model
+st.header("Monte Carlo Simulation: Procedures in New Model")
+
+# Probability distribution for procedures based on referrals
+procedures_df['probability'] = procedures_df['total referrals'] / procedures_df['total referrals'].sum()
+
+# Set up Monte Carlo simulation
+n_simulations = 10000
+available_minutes = session_minutes_new_model
+procedure_durations = procedures_df['average duration'] * 60  # Convert to minutes
+procedure_probs = procedures_df['probability']
+
+# Monte Carlo sampling
+np.random.seed(42)  # For reproducibility
+total_procedures_fitted = []
+
+for _ in range(n_simulations):
+    minutes_used = 0
+    procedures_count = 0
+
+    while minutes_used < available_minutes:
+        sampled_procedure = np.random.choice(procedure_durations, p=procedure_probs)
+        if minutes_used + sampled_procedure > available_minutes:
+            break
+        minutes_used += sampled_procedure
+        procedures_count += 1
+
+    total_procedures_fitted.append(procedures_count)
+
+# Calculate average procedures that can fit in new model capacity
+average_procedures_fitted = np.mean(total_procedures_fitted)
+
+# Display Monte Carlo results
+st.write(f"**Estimated Number of Procedures in New Model Capacity (Monte Carlo Average):** {average_procedures_fitted:.0f}")
+
+# Create a bar chart comparing baseline and new model procedures
+fig_comparison = go.Figure()
+fig_comparison.add_trace(go.Bar(
+    x=['Baseline (12-Month)', 'New Model (Monte Carlo)'],
+    y=[total_cases_12_months, average_procedures_fitted],
+    name='Number of Cases',
+    marker_color='mediumseagreen'
+))
+
+fig_comparison.update_layout(
+    title='Number of Cases: Baseline vs New Model (Monte Carlo)',
+    xaxis_title='Model',
+    yaxis_title='Number of Cases',
+    barmode='group'
+)
+
+st.plotly_chart(fig_comparison, use_container_width=True)
+
