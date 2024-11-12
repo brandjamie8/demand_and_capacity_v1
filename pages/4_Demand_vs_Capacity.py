@@ -16,7 +16,7 @@ if ('procedure_specialty_df' in st.session_state and st.session_state.procedure_
     total_sessions_next_year = st.session_state.weeks_last_year * st.session_state.sessions_per_week_last_year
     session_minutes_next_year = total_sessions_next_year * session_duration_hours * 60 * st.session_state.utilisation_last_year
 
-    st.write(f"**Total Sessions Next Year:** {total_sessions_next_year:.2f}")
+    st.write(f"**Total Sessions Next Year:** {total_sessions_next_year:.0f}")
     st.write(f"**Total Session Minutes Next Year (after Utilisation):** {session_minutes_next_year:.0f}")
 
     # Save calculations to session state
