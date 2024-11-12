@@ -5,10 +5,7 @@ st.title("Capacity")
 
 st.write("""
 In this section, you can look at the number of cases and sessions in the baseline period, 
-what this would mean in whole-year terms and build a session
-input variables related to last year's sessions,
-such as weeks per year, sessions per week, utilisation percentage, and session duration.
-The app will calculate the total sessions and session minutes for last year.
+what this would mean in whole-year terms and build a session model based on weeks per year, sessions per week and utilisation percentage.
 """)
 
 # Load the waiting list data from session state
@@ -130,38 +127,35 @@ if 'session_duration_hours' not in st.session_state:
     st.session_state.session_duration_hours = 4.0
 
 # Input variables for last year
-st.header("Input Last Year's Session Variables")
+st.header("Input Variables to Create a Session Model")
 
-# Use unique keys for widgets to avoid conflicts
-weeks_last_year = st.number_input(
-    "Weeks per Year (Last Year)",
-    min_value=1,
-    max_value=52,
-    value=st.session_state.weeks_last_year,
-    key='input_weeks_last_year'
-)
-sessions_per_week_last_year = st.number_input(
-    "Sessions per Week (Last Year)",
-    min_value=0.0,
-    value=st.session_state.sessions_per_week_last_year,
-    step=0.1,
-    key='input_sessions_per_week_last_year'
-)
+col1, col2, _ = st.columns(3)
+
+with col1:
+    weeks_last_year = st.number_input(
+        "Weeks per Year",
+        min_value=1,
+        max_value=52,
+        value=st.session_state.weeks_last_year,
+        key='input_weeks_last_year'
+    )
+with col2:
+    sessions_per_week_last_year = st.number_input(
+        "Sessions per Week",
+        min_value=0.0,
+        value=st.session_state.sessions_per_week_last_year,
+        step=0.1,
+        key='input_sessions_per_week_last_year'
+    )
 utilisation_last_year = st.slider(
-    "Utilisation Percentage (Last Year)",
+    "Utilisation Percentage",
     min_value=0.0,
     max_value=1.0,
     value=st.session_state.utilisation_last_year,
     step=0.01,
     key='input_utilisation_last_year'
 )
-session_duration_hours = st.number_input(
-    "Session Duration (Hours)",
-    min_value=0.0,
-    value=st.session_state.session_duration_hours,
-    step=0.5,
-    key='input_session_duration_hours'
-)
+session_duration_hours = 4
 
 # Save inputs to session state
 st.session_state.weeks_last_year = weeks_last_year
