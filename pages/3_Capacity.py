@@ -148,7 +148,7 @@ with col2:
         "Sessions per Week",
         min_value=0.0,
         value=st.session_state.sessions_per_week_last_year,
-        step=0.5,
+        step=0.1,
         key='input_sessions_per_week_last_year'
     )
 utilisation_last_year = st.slider(
