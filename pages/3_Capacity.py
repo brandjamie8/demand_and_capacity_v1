@@ -213,25 +213,18 @@ fig_minutes.update_layout(
 
 # Display the charts side-by-side
 col1, col2 = st.columns(2)
+
 with col1:
     st.plotly_chart(fig_sessions, use_container_width=True)
     sessions_diff_percent = ((total_sessions_new_model - total_sessions_12_months) / total_sessions_12_months) * 100
-    sessions_diff_text = f"{sessions_diff_percent:+.2f}%"
-
-    # Center the percentage difference message by using another column
-    col_center = st.columns([1, 2, 1])[1]  # Use a three-column layout and take the middle one
-    with col_center:
-        st.write(f"**{sessions_diff_text}**")
+    st.write(f"**% Difference in Sessions:** {sessions_diff_percent:+.2f}%")
 
 with col2:
     st.plotly_chart(fig_minutes, use_container_width=True)
     minutes_diff_percent = ((session_minutes_new_model - total_minutes_12_months) / total_minutes_12_months) * 100
-    minutes_diff_text = f"{minutes_diff_percent:+.2f}%"
+    st.write(f"**% Difference in Minutes Utilised:** {minutes_diff_percent:+.2f}%")
 
-    # Center the percentage difference message by using another column
-    col_center = st.columns([1, 2, 1])[1]  # Use a three-column layout and take the middle one
-    with col_center:
-        st.write(f"**{minutes_diff_text}**")
+
 
 # Save calculations to session state
 st.session_state.total_sessions_last_year = total_sessions_last_year
