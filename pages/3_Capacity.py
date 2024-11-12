@@ -28,12 +28,14 @@ specialties = waiting_list_df['specialty'].unique()
 if 'selected_specialty' not in st.session_state or st.session_state.selected_specialty not in specialties:
     st.session_state.selected_specialty = specialties[0]
 
-selected_specialty = st.selectbox(
-    'Select Specialty',
-    specialties,
-    index=list(specialties).index(st.session_state.selected_specialty),
-    key='procedure_demand_specialty_select'
-)
+col, _ = st.columns(2)
+with col1:
+    selected_specialty = st.selectbox(
+        'Select Specialty',
+        specialties,
+        index=list(specialties).index(st.session_state.selected_specialty),
+        key='procedure_demand_specialty_select'
+    )
 
 # Save the selected specialty to session state
 st.session_state.selected_specialty = selected_specialty
@@ -90,15 +92,17 @@ sessions_in_48wk_model = total_sessions_12_months / 48
 
 st.write(f"{total_sessions_12_months:.0f} sessions in 12 months translated into weekly operating models:")
 
-# Get custom weeks input
-custom_weeks = st.number_input(
-    "Enter Custom Number of Weeks",
-    min_value=1,
-    max_value=52,
-    value=52,
-    step=1,
-    key='input_custom_weeks'
-)
+col1, _, _ = st.columns(3)
+with col1:
+    # Get custom weeks input
+    custom_weeks = st.number_input(
+        "Enter Custom Number of Weeks",
+        min_value=1,
+        max_value=52,
+        value=52,
+        step=1,
+        key='input_custom_weeks'
+    )
 sessions_in_custom_weeks_model = total_sessions_12_months / custom_weeks
 
 # Create a DataFrame to display the results in a table
@@ -144,7 +148,7 @@ with col2:
         "Sessions per Week",
         min_value=0.0,
         value=st.session_state.sessions_per_week_last_year,
-        step=0.1,
+        step=0.5,
         key='input_sessions_per_week_last_year'
     )
 utilisation_last_year = st.slider(
@@ -167,8 +171,8 @@ st.session_state.session_duration_hours = session_duration_hours
 total_sessions_last_year = weeks_last_year * sessions_per_week_last_year
 session_minutes_last_year = total_sessions_last_year * session_duration_hours * 60 * utilisation_last_year
 
-st.write(f"**Total Sessions Last Year:** {total_sessions_last_year:.2f}")
-st.write(f"**Total Session Minutes Last Year (after Utilisation):** {session_minutes_last_year:.0f}")
+st.write(f"**Total Sessions in Model:** {total_sessions_last_year:.0f}")
+st.write(f"**Total Session Minutes in Model (after Utilisation):** {session_minutes_last_year:.0f}")
 
 # Save calculations to session state
 st.session_state.total_sessions_last_year = total_sessions_last_year
