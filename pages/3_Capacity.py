@@ -25,7 +25,7 @@ if 'baseline_start_date' not in st.session_state or 'baseline_end_date' not in s
 baseline_start = pd.to_datetime(st.session_state.baseline_start_date).to_period('M').to_timestamp('M')
 baseline_end = pd.to_datetime(st.session_state.baseline_end_date).to_period('M').to_timestamp('M')
 
-specialties = procedure_df['specialty'].unique()
+specialties = waiting_list_df['specialty'].unique()
 if 'selected_specialty' not in st.session_state or st.session_state.selected_specialty not in specialties:
     st.session_state.selected_specialty = specialties[0]
 
