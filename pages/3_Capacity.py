@@ -58,6 +58,9 @@ total_minutes_utilised_baseline = baseline_df['minutes utilised'].sum()
 total_minutes_possible_baseline = total_sessions_baseline * session_duration_hours * 60
 baseline_utilisation = total_minutes_utilised_baseline / total_minutes_possible_baseline if total_minutes_possible_baseline > 0 else 0
 
+# Calculate ACPL
+cases_per_session = total_cases_baseline / total_sessions_baseline
+
 # Scale up to equivalent 12-month period
 scaling_factor = 12 / num_baseline_months
 total_cases_12_months = total_cases_baseline * scaling_factor
@@ -72,6 +75,8 @@ st.write(f"**Total Cases in Baseline Period:** {total_cases_baseline:.0f}")
 st.write(f"**Total Sessions in Baseline Period:** {total_sessions_baseline:.0f}")
 st.write(f"**Total Minutes Utilised in Baseline Period:** {total_minutes_utilised_baseline:.0f}")
 st.write(f"**Baseline Utilisation Percentage:** {baseline_utilisation:.2%}")
+st.write(f"**Baseline Average Cases Per Session:** {cases_per_session:.2f}")
+
 
 # Display scaled-up values equivalent to 12 months
 st.header("Equivalent 12-Month Period Statistics")
