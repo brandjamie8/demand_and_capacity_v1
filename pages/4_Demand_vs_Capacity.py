@@ -61,7 +61,7 @@ if ('procedure_specialty_df' in st.session_state and st.session_state.procedure_
     st.session_state.required_sessions_next_year = required_sessions_next_year
 
     # Determine if capacity meets demand
-    if sessions_per_week_next_year >= required_sessions_next_year:
+    if st.session_state.sessions_per_week_last_year >= required_sessions_next_year:
         st.success("The planned capacity meets or exceeds the demand.")
     else:
         st.warning("The planned capacity does not meet the demand.")
