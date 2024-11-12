@@ -12,47 +12,6 @@ if ('procedure_specialty_df' in st.session_state and st.session_state.procedure_
     procedure_specialty_df = st.session_state.procedure_specialty_df
     session_duration_hours = st.session_state.session_duration_hours
 
-    # Input capacity variables
-    st.header("Input Capacity Variables for Next Year")
-
-    if 'weeks_next_year' not in st.session_state:
-        st.session_state.weeks_next_year = 48
-
-    if 'sessions_per_week_next_year' not in st.session_state:
-        st.session_state.sessions_per_week_next_year = 10.0
-
-    if 'utilisation_next_year' not in st.session_state:
-        st.session_state.utilisation_next_year = 0.80
-
-    # Use unique keys for widgets
-    weeks_next_year = st.number_input(
-        "Weeks per Year (Next Year)",
-        min_value=1,
-        max_value=52,
-        value=st.session_state.weeks_next_year,
-        key='input_weeks_next_year'
-    )
-    sessions_per_week_next_year = st.number_input(
-        "Sessions per Week (Next Year)",
-        min_value=0.0,
-        value=st.session_state.sessions_per_week_next_year,
-        step=0.1,
-        key='input_sessions_per_week_next_year'
-    )
-    utilisation_next_year = st.slider(
-        "Utilisation Percentage (Next Year)",
-        min_value=0.0,
-        max_value=1.0,
-        value=st.session_state.utilisation_next_year,
-        step=0.01,
-        key='input_utilisation_next_year'
-    )
-
-    # Save inputs to session state
-    st.session_state.weeks_next_year = weeks_next_year
-    st.session_state.sessions_per_week_next_year = sessions_per_week_next_year
-    st.session_state.utilisation_next_year = utilisation_next_year
-
     # Calculate total sessions and session minutes next year
     total_sessions_next_year = weeks_next_year * sessions_per_week_next_year
     session_minutes_next_year = total_sessions_next_year * session_duration_hours * 60 * utilisation_next_year
