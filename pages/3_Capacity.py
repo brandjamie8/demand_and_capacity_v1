@@ -175,6 +175,53 @@ session_minutes_last_year = total_sessions_last_year * session_duration_hours * 
 st.write(f"**Total Sessions in Model:** {total_sessions_last_year:.0f}")
 st.write(f"**Total Session Minutes in Model (after Utilisation):** {session_minutes_last_year:.0f}")
 
+# Calculate total sessions and session minutes in the new model
+total_sessions_new_model = weeks_last_year * sessions_per_week_last_year
+session_minutes_new_model = total_sessions_new_model * session_duration_hours * 60 * utilisation_last_year
+
+# Create side-by-side charts for comparison
+fig_sessions = go.Figure()
+fig_sessions.add_trace(go.Bar(
+    x=['Baseline (12-Month)', 'New Model'],
+    y=[total_sessions_12_months, total_sessions_new_model],
+    name='Total Sessions',
+    marker_color='lightskyblue'
+))
+
+fig_sessions.update_layout(
+    title='Total Sessions: Baseline vs New Model',
+    xaxis_title='Model',
+    yaxis_title='Total Sessions',
+    barmode='group'
+)
+
+fig_minutes = go.Figure()
+fig_minutes.add_trace(go.Bar(
+    x=['Baseline (12-Month)', 'New Model'],
+    y=[total_minutes_12_months, session_minutes_new_model],
+    name='Total Minutes',
+    marker_color='lightcoral'
+))
+
+fig_minutes.update_layout(
+    title='Total Minutes: Baseline vs New Model',
+    xaxis_title='Model',
+    yaxis_title='Total Minutes',
+    barmode='group'
+)
+
+# Display the charts side-by-side
+col1, col2 = st.columns(2)
+with col1:
+    st.plotly_chart(fig_sessions, use_container_width=True)
+    sessions_diff_percent = ((total_sessions_new_model - total_sessions_12_months) / total_sessions_12_months) * 100
+    st.write(f"**% Difference in Sessions:** {sessions_diff_percent:.2f}%")
+
+with col2:
+    st.plotly_chart(fig_minutes, use_container_width=True)
+    minutes_diff_percent = ((session_minutes_new_model - total_minutes_12_months) / total_minutes_12_months) * 100
+    st.write(f"**% Difference in Minutes Utilised:** {minutes_diff_percent:.2f}%")
+
 # Save calculations to session state
 st.session_state.total_sessions_last_year = total_sessions_last_year
 st.session_state.session_minutes_last_year = session_minutes_last_year
