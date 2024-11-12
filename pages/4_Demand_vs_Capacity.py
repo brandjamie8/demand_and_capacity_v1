@@ -55,7 +55,7 @@ if ('procedure_specialty_df' in st.session_state and st.session_state.procedure_
     required_sessions_next_year = total_demand_minutes / (session_duration_hours * 60 * st.session_state.utilisation_last_year) / st.session_state.weeks_last_year
 
     st.write(f"**Sessions per Week Required to Meet Demand:** {required_sessions_next_year:.2f}")
-    st.write(f"**Sessions per Week Planned Next Year:** {sessions_per_week_next_year:.2f}")
+    st.write(f"**Sessions per Week Planned Next Year:** {st.session_state.sessions_per_week_last_year:.2f}")
 
     # Save required sessions to session state
     st.session_state.required_sessions_next_year = required_sessions_next_year
