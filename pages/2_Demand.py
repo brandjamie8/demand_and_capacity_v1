@@ -36,7 +36,7 @@ if 'procedure_df' in st.session_state and st.session_state.procedure_df is not N
         procedure_specialty_df = procedure_df[procedure_df['specialty'] == selected_specialty]
 
         # Calculate demand minutes
-        procedure_specialty_df['demand minutes'] = procedure_specialty_df['total referrals'] * procedure_specialty_df['average duration'] * 60
+        procedure_specialty_df['demand minutes'] = procedure_specialty_df['total referrals'] * procedure_specialty_df['average duration']
 
         procedure_specialty_df['month'] = pd.to_datetime(procedure_specialty_df['month'])
         
