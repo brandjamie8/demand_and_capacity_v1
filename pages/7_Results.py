@@ -5,7 +5,7 @@ import streamlit as st
 st.title("Results")
 
 st.write("""
-This section summarizes the key results from the previous sections.
+This section summarises the key results from the previous sections.
 """)
 
 # Check if necessary data is available
