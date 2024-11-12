@@ -91,6 +91,8 @@ sessions_in_42wk_model = total_sessions_12_months / 42
 sessions_in_45wk_model = total_sessions_12_months / 45
 sessions_in_48wk_model = total_sessions_12_months / 48
 
+st.write(f"{total_sessions_12_months} sessions in 12 months translated into weekly operating models:")
+
 # Get custom weeks input
 custom_weeks = st.number_input(
     "Enter Custom Number of Weeks",
@@ -104,15 +106,13 @@ sessions_in_custom_weeks_model = total_sessions_12_months / custom_weeks
 
 # Create a DataFrame to display the results in a table
 summary_data = {
-    'Operating Model': ['42 weeks of year', '45 weeks of year', '48 weeks of year', f'{custom_weeks} weeks of year'],
-    'Sessions per Week': [sessions_in_42wk_model, sessions_in_45wk_model, sessions_in_48wk_model, sessions_in_custom_weeks_model],
+    'Operating Model': ['42 weeks of year', '45 weeks of year', '48 weeks of year', f'{custom_weeks} weeks of year (custom)'],
+    'Sessions per Week': [round(sessions, 1) for sessions in [sessions_in_42wk_model, sessions_in_45wk_model, sessions_in_48wk_model, sessions_in_custom_weeks_model]]
 }
 
 summary_df = pd.DataFrame(summary_data)
-st.table(summary_df)
-
-
-
+with col1, _:
+    col1 = st.table(summary_df)
 
 
 # Initialise session state variables if they don't exist
