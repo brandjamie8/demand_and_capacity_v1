@@ -34,7 +34,7 @@ num_baseline_months = len(pd.date_range(start=baseline_start, end=baseline_end, 
 
 # Calculate total cases, sessions, and minutes utilised in the baseline period
 total_cases_baseline = baseline_df['additions to waiting list'].sum()
-total_sessions_baseline = num_baseline_months * st.session_state.sessions_per_week_last_year * 4  # Assume 4 weeks per month
+total_sessions_baseline = baseline_df['sessions'].sum()  # Use sessions from waiting_list_df
 session_duration_hours = st.session_state.session_duration_hours
 utilisation_last_year = st.session_state.utilisation_last_year
 total_minutes_utilised_baseline = total_sessions_baseline * session_duration_hours * 60 * utilisation_last_year
