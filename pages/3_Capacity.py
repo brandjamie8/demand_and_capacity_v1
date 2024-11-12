@@ -28,7 +28,7 @@ specialties = waiting_list_df['specialty'].unique()
 if 'selected_specialty' not in st.session_state or st.session_state.selected_specialty not in specialties:
     st.session_state.selected_specialty = specialties[0]
 
-col, _ = st.columns(2)
+col1, _ = st.columns(2)
 with col1:
     selected_specialty = st.selectbox(
         'Select Specialty',
@@ -113,7 +113,7 @@ summary_data = {
 
 summary_df = pd.DataFrame(summary_data)
 
-col, _ = st.columns(2)
+col1, _ = st.columns(2)
 col1 = st.dataframe(summary_df)
 
 
