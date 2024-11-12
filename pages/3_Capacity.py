@@ -35,9 +35,14 @@ num_baseline_months = len(pd.date_range(start=baseline_start, end=baseline_end, 
 # Calculate total cases, sessions, and minutes utilised in the baseline period
 total_cases_baseline = baseline_df['additions to waiting list'].sum()
 total_sessions_baseline = baseline_df['sessions'].sum()  # Use sessions from waiting_list_df
-session_duration_hours = st.session_state.session_duration_hours
-utilisation_last_year = st.session_state.utilisation_last_year
-total_minutes_utilised_baseline = total_sessions_baseline * session_duration_hours * 60 * utilisation_last_year
+session_duration_hours = 4
+
+# Calculate minutes utilised
+total_minutes_utilised_baseline = baseline_df['minutes utilised'].sum() 
+
+# Calculate baseline utilisation
+total_minutes_possible_baseline = total_sessions_baseline * session_duration_hours * 60
+baseline_utilisation = total_minutes_utilised_baseline / total_minutes_possible_baseline if total_minutes_possible_baseline > 0 else 0
 
 # Scale up to equivalent 12-month period
 scaling_factor = 12 / num_baseline_months
@@ -52,6 +57,7 @@ st.write(f"**Number of Months in Baseline Period:** {num_baseline_months}")
 st.write(f"**Total Cases in Baseline Period:** {total_cases_baseline:.0f}")
 st.write(f"**Total Sessions in Baseline Period:** {total_sessions_baseline:.2f}")
 st.write(f"**Total Minutes Utilised in Baseline Period:** {total_minutes_utilised_baseline:.0f}")
+st.write(f"**Baseline Utilisation Percentage:** {baseline_utilisation:.2%}")
 
 # Display scaled-up values equivalent to 12 months
 st.header("Equivalent 12-Month Period Statistics")
