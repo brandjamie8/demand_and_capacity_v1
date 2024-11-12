@@ -230,21 +230,23 @@ with col2:
 st.session_state.total_sessions_last_year = total_sessions_last_year
 st.session_state.session_minutes_last_year = session_minutes_last_year
 
+# Check if data is available in session state
+if 'procedure_df' in st.session_state and st.session_state.procedure_df is not None:
+    procedure_df = st.session_state.procedure_df
 
 # Monte Carlo Simulation for Procedures in the New Model
 st.header("Monte Carlo Simulation: Procedures in New Model")
 
 # Probability distribution for procedures based on referrals
-procedures_df['probability'] = procedures_df['total referrals'] / procedures_df['total referrals'].sum()
+procedure_df['probability'] = procedure_df['total referrals'] / procedure_df['total referrals'].sum()
 
 # Set up Monte Carlo simulation
 n_simulations = 10000
 available_minutes = session_minutes_new_model
-procedure_durations = procedures_df['average duration'] * 60  # Convert to minutes
-procedure_probs = procedures_df['probability']
+procedure_durations = procedure_df['average duration'] 
+procedure_probs = procedure_df['probability']
 
 # Monte Carlo sampling
-np.random.seed(42)  # For reproducibility
 total_procedures_fitted = []
 
 for _ in range(n_simulations):
