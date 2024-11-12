@@ -91,7 +91,7 @@ sessions_in_42wk_model = total_sessions_12_months / 42
 sessions_in_45wk_model = total_sessions_12_months / 45
 sessions_in_48wk_model = total_sessions_12_months / 48
 
-st.write(f"{total_sessions_12_months} sessions in 12 months translated into weekly operating models:")
+st.write(f"{total_sessions_12_months:.0f} sessions in 12 months translated into weekly operating models:")
 
 # Get custom weeks input
 custom_weeks = st.number_input(
