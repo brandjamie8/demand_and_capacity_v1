@@ -55,14 +55,14 @@ st.header("Baseline Period Statistics")
 st.write(f"**Baseline Period:** {baseline_start.strftime('%b %Y')} to {baseline_end.strftime('%b %Y')}")
 st.write(f"**Number of Months in Baseline Period:** {num_baseline_months}")
 st.write(f"**Total Cases in Baseline Period:** {total_cases_baseline:.0f}")
-st.write(f"**Total Sessions in Baseline Period:** {total_sessions_baseline:.2f}")
+st.write(f"**Total Sessions in Baseline Period:** {total_sessions_baseline:.0f}")
 st.write(f"**Total Minutes Utilised in Baseline Period:** {total_minutes_utilised_baseline:.0f}")
 st.write(f"**Baseline Utilisation Percentage:** {baseline_utilisation:.2%}")
 
 # Display scaled-up values equivalent to 12 months
 st.header("Equivalent 12-Month Period Statistics")
 st.write(f"**Total Cases (12-Month Equivalent):** {total_cases_12_months:.0f}")
-st.write(f"**Total Sessions (12-Month Equivalent):** {total_sessions_12_months:.2f}")
+st.write(f"**Total Sessions (12-Month Equivalent):** {total_sessions_12_months:.0f}")
 st.write(f"**Total Minutes Utilised (12-Month Equivalent):** {total_minutes_12_months:.0f}")
 
 # Initialize session state variables if they don't exist
