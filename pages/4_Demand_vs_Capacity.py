@@ -52,7 +52,7 @@ if ('procedure_specialty_df' in st.session_state and st.session_state.procedure_
     st.plotly_chart(fig_demand_vs_capacity, use_container_width=True)
 
     # Calculate sessions required to meet demand
-    required_sessions_next_year = total_demand_minutes / (session_duration_hours * 60 * utilisation_next_year) / weeks_next_year
+    required_sessions_next_year = total_demand_minutes / (session_duration_hours * 60 * st.session_state.utilisation_last_year) / st.session_state.weeks_last_year
 
     st.write(f"**Sessions per Week Required to Meet Demand:** {required_sessions_next_year:.2f}")
     st.write(f"**Sessions per Week Planned Next Year:** {sessions_per_week_next_year:.2f}")
