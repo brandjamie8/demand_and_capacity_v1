@@ -25,9 +25,23 @@ if 'baseline_start_date' not in st.session_state or 'baseline_end_date' not in s
 baseline_start = pd.to_datetime(st.session_state.baseline_start_date).to_period('M').to_timestamp('M')
 baseline_end = pd.to_datetime(st.session_state.baseline_end_date).to_period('M').to_timestamp('M')
 
+specialties = procedure_df['specialty'].unique()
+if 'selected_specialty' not in st.session_state or st.session_state.selected_specialty not in specialties:
+    st.session_state.selected_specialty = specialties[0]
+
+selected_specialty = st.selectbox(
+    'Select Specialty',
+    specialties,
+    index=list(specialties).index(st.session_state.selected_specialty),
+    key='procedure_demand_specialty_select'
+)
+
+# Save the selected specialty to session state
+st.session_state.selected_specialty = selected_specialty
+
 # Filter data for the baseline period
 waiting_list_df['month'] = pd.to_datetime(waiting_list_df['month']) + pd.offsets.MonthEnd(0)
-baseline_df = waiting_list_df[(waiting_list_df['month'] >= baseline_start) & (waiting_list_df['month'] <= baseline_end)]
+baseline_df = waiting_list_df[(waiting_list_df['month'] >= baseline_start) & (waiting_list_df['month'] <= baseline_end) & (waiting_list_df['specialty'] == selected_specialty)] 
 
 # Calculate the number of months in the baseline period
 num_baseline_months = len(pd.date_range(start=baseline_start, end=baseline_end, freq='M'))
