@@ -79,6 +79,12 @@ st.write(f"**Total Minutes Utilised in Baseline Period:** {total_minutes_utilise
 st.write(f"**Baseline Utilisation Percentage:** {baseline_utilisation:.2%}")
 st.write(f"**Baseline Average Cases Per Session:** {cases_per_session:.2f}")
 
+# Display scaled-up values equivalent to 12 months
+st.header("Equivalent 12-Month Period Statistics")
+st.write(f"**Total Cases (12-Month Equivalent):** {total_cases_12_months:.0f}")
+st.write(f"**Total Sessions (12-Month Equivalent):** {total_sessions_12_months:.0f}")
+st.write(f"**Total Minutes Utilised (12-Month Equivalent):** {total_minutes_12_months:.0f}")
+
 
 # Calculate the sessions per week on weeks model
 sessions_in_42wk_model = total_sessions_12_months / 42
@@ -98,25 +104,14 @@ sessions_in_custom_weeks_model = total_sessions_12_months / custom_weeks
 
 # Create a DataFrame to display the results in a table
 summary_data = {
-    'Metric': ['Total Cases', 'Total Sessions', 'Total Minutes Utilised'],
-    '12-Month Equivalent': [total_cases_12_months, total_sessions_12_months, total_minutes_12_months],
-    'Sessions in 42 Week Model': [None, sessions_in_42wk_model, None],
-    'Sessions in 45 Week Model': [None, sessions_in_45wk_model, None],
-    'Sessions in 48 Week Model': [None, sessions_in_48wk_model, None],
-    f'Sessions in {custom_weeks} Week Model': [None, sessions_in_custom_weeks_model, None]
+    'Operating Model': ['42 weeks of year', '45 weeks of year', '48 weeks of year', f'{custom_weeks} weeks of year'],
+    'Sessions per Week': [sessions_in_42wk_model, sessions_in_45wk_model, sessions_in_48wk_model, sessions_in_custom_weeks_model],
 }
 
 summary_df = pd.DataFrame(summary_data)
-
-# Display the summary DataFrame as a table
-st.header("Summary Statistics Table")
 st.table(summary_df)
 
-# Display scaled-up values equivalent to 12 months
-st.header("Equivalent 12-Month Period Statistics")
-st.write(f"**Total Cases (12-Month Equivalent):** {total_cases_12_months:.0f}")
-st.write(f"**Total Sessions (12-Month Equivalent):** {total_sessions_12_months:.0f}")
-st.write(f"**Total Minutes Utilised (12-Month Equivalent):** {total_minutes_12_months:.0f}")
+
 
 
 
