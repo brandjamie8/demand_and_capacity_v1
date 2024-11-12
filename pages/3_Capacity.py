@@ -113,7 +113,7 @@ summary_data = {
 summary_df = pd.DataFrame(summary_data)
 
 col, _ = st.columns(2)
-col1 = st.table(summary_df)
+col1 = st.dataframe(summary_df)
 
 
 # Initialise session state variables if they don't exist
