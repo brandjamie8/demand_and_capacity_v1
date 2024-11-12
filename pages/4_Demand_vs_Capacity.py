@@ -11,10 +11,10 @@ if ('procedure_specialty_df' in st.session_state and st.session_state.procedure_
    ('session_duration_hours' in st.session_state):
     procedure_specialty_df = st.session_state.procedure_specialty_df
     session_duration_hours = st.session_state.session_duration_hours
-
+ 
     # Calculate total sessions and session minutes next year
-    total_sessions_next_year = weeks_next_year * sessions_per_week_next_year
-    session_minutes_next_year = total_sessions_next_year * session_duration_hours * 60 * utilisation_next_year
+    total_sessions_next_year = st.session_state.weeks_last_year * st.session_state.sessions_per_week_last_year
+    session_minutes_next_year = total_sessions_next_year * session_duration_hours * 60 * st.session_state.utilisation_last_year
 
     st.write(f"**Total Sessions Next Year:** {total_sessions_next_year:.2f}")
     st.write(f"**Total Session Minutes Next Year (after Utilisation):** {session_minutes_next_year:.0f}")
