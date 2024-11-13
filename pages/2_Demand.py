@@ -354,5 +354,8 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
        
     else:
         st.error("Waiting list data does not contain the required columns.")
+
 else:
     st.write("Please ensure you have uploaded the required data and completed previous sections.")
+
+st.subheader("Planned Procedure Demand")
