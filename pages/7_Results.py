@@ -52,7 +52,7 @@ if waiting_list_start != "" and waiting_list_end != "":
 
 # Required Sessions to Meet Demand
 st.header("Required Sessions to Meet Demand")
-st.write(f"**Sessions per Week Required to Meet Referral Demand:** {required_sessions_next_year}")
+st.write(f"**Sessions per Week Required to Meet Referral Demand:** {required_sessions_next_year:.0f}")
 st.write(f"**Sessions per Week Planned Next Year:** {sessions_per_week_next_year}")
 
 # Difference Between Required and Planned Sessions
