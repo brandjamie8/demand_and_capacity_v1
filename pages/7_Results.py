@@ -13,7 +13,9 @@ required_keys = [
     'required_sessions_next_year', 'sessions_per_week_next_year'
 ]
 
-st.write(key in st.session_state)
+if st.session_state:
+    for key in st.session_state.keys():
+        st.write(f"- **{key}**: {st.session_state[key]}")
 
 if all(key in st.session_state for key in required_keys):
     # Retrieve the necessary data from session state
