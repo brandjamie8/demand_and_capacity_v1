@@ -13,6 +13,8 @@ required_keys = [
     'required_sessions_next_year', 'sessions_per_week_next_year'
 ]
 
+st.write(key in st.session_state)
+
 if all(key in st.session_state for key in required_keys):
     # Retrieve the necessary data from session state
     total_demand_cases = st.session_state.total_demand_cases
