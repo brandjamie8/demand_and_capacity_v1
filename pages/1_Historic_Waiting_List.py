@@ -10,7 +10,7 @@ st.markdown("""
 This page analyses the historic waiting list data and provides a predicted starting point for future capacity planning.
 
 - **Baseline Period Selection:** Choose a period that represents typical additions and removals to the waiting list. The model uses data from this period to simulate future changes.
-- **Modeling Start Date:** Select a future date after the latest available data. The model predicts the waiting list size up to this date.
+- **Modelling Start Date:** Select a future date after the latest available data. The model predicts the waiting list size up to this date.
 """)
 
 # Check if data is available in session state
