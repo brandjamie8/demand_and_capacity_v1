@@ -266,7 +266,7 @@ for _ in range(n_simulations):
     total_procedures_fitted.append(procedures_count)
 
 # Calculate average procedures that can fit in new model capacity
-average_procedures_fitted = np.mean(total_procedures_fitted)
+average_procedures_fitted = np.mean(total_procedures_fitted) * 2
 
 # Display Monte Carlo results
 st.write(f"**Estimated Number of Procedures in New Model Capacity (Monte Carlo Average):** {average_procedures_fitted:.0f}")
