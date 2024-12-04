@@ -275,7 +275,7 @@ st.header("Monte Carlo Simulation: Procedures in New Model")
 procedure_df['probability'] = procedure_df['total referrals'] / procedure_df['total referrals'].sum()
 
 # Set up Monte Carlo simulation
-n_simulations = 100
+n_simulations = 50
 available_minutes = session_minutes_last_year
 procedure_durations = procedure_df['average duration'] 
 procedure_probs = procedure_df['probability']
@@ -292,7 +292,7 @@ for _ in range(n_simulations):
         if minutes_used + sampled_procedure > available_minutes:
             break
         minutes_used += sampled_procedure
-        procedures_count += 1
+        procedures_count += 2
 
     total_procedures_fitted.append(procedures_count)
 
