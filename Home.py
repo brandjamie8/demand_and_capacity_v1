@@ -10,7 +10,7 @@ st.set_page_config(
 st.title('Welcome to the Admitted Demand and Capacity Analysis App')
 
 st.write("""
-This application allows you to analyze procedure demand, capacity, and waiting list dynamics.
+This application allows you to analyse procedure demand, capacity, and waiting list dynamics.
 
 Use the navigation on the left to select different sections of the analysis.
 """)
