@@ -1,5 +1,3 @@
-# Home.py
-
 import streamlit as st
 import pandas as pd
 
@@ -17,50 +15,45 @@ This application allows you to analyze procedure demand, capacity, and waiting l
 Use the navigation on the left to select different sections of the analysis.
 """)
 
-# Initialize session state variables if they don't exist
-if 'waiting_list_df' not in st.session_state:
-    st.session_state.waiting_list_df = None
+# Define file paths
+WAITING_LIST_FILE_PATH = "data/waiting_list.csv"
+PROCEDURE_DATA_FILE_PATH = "data/procedure_data.csv"
 
-if 'procedure_df' not in st.session_state:
-    st.session_state.procedure_df = None
+try:
+    # Load data from file paths
+    waiting_list_df = pd.read_csv(WAITING_LIST_FILE_PATH)
+    procedure_df = pd.read_csv(PROCEDURE_DATA_FILE_PATH)
 
-if 'selected_specialty' not in st.session_state:
-    st.session_state.selected_specialty = None
+    # Save data to session state
+    st.session_state.waiting_list_df = waiting_list_df
+    st.session_state.procedure_df = procedure_df
 
-# Sidebar Uploaders
-st.sidebar.header('Upload Data Files')
+    # Initialize selected specialty if not already set
+    if 'selected_specialty' not in st.session_state:
+        st.session_state.selected_specialty = None
 
-waiting_list_file = st.sidebar.file_uploader(
-    "Upload Waiting List Data CSV",
-    type='csv',
-    key='waiting_list_file'
-)
+    # Set available specialties from the waiting list data
+    specialties = waiting_list_df['specialty'].unique()
 
-procedure_data_file = st.sidebar.file_uploader(
-    "Upload Procedure Data CSV",
-    type='csv',
-    key='procedure_data_file'
-)
+    # Let the user select a specialty
+    if st.session_state.selected_specialty is None:
+        st.session_state.selected_specialty = specialties[0]  # Default to the first specialty
 
-# Save uploaded files to session state
-if waiting_list_file is not None:
-    st.session_state.waiting_list_df = pd.read_csv(waiting_list_file)
+    selected_specialty = st.selectbox('Select Specialty', specialties, index=list(specialties).index(st.session_state.selected_specialty))
+    
+    # Save the selected specialty to session state
+    st.session_state.selected_specialty = selected_specialty
 
-    # Display the head of the waiting list data
+    # Display previews of the datasets
     st.subheader("Waiting List Data Preview")
     st.write("Here are the first few rows of the Waiting List Data:")
-    st.dataframe(st.session_state.waiting_list_df.head())
+    st.dataframe(waiting_list_df.head())
 
-else:
-    st.write("Please upload the **Waiting List Data CSV** file in the sidebar.")
-
-if procedure_data_file is not None:
-    st.session_state.procedure_df = pd.read_csv(procedure_data_file)
-
-    # Display the head of the procedure data
     st.subheader("Procedure Data Preview")
     st.write("Here are the first few rows of the Procedure Data:")
-    st.dataframe(st.session_state.procedure_df.head())
+    st.dataframe(procedure_df.head())
 
-else:
-    st.write("Please upload the **Procedure Data CSV** file in the sidebar.")
+except FileNotFoundError as e:
+    st.error(f"Error loading data: {e}. Please ensure the CSV files are located at the correct file paths.")
+
+st.sidebar.header('Data Files Loaded Successfully')
