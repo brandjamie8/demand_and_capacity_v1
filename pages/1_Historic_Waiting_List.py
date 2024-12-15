@@ -149,9 +149,6 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
         fig2_placeholder = st.empty()
         fig2_placeholder.plotly_chart(fig2, use_container_width=True)
 
-        ### **4. Modeling Start Date Input and Automatic Prediction Length Calculation**
-        st.subheader("Modelling Start Date")
-
         st.write("""
         Select the date from which you want the model to start predicting the waiting list size. This date should be after the latest month in the data.
         """)
@@ -173,11 +170,13 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
             # Initialize with default value if not set
             st.session_state.model_start_date = default_model_start_date
         
-        # Use the value from session state for the date input
-        model_start_date = st.date_input(
-            'Start Date for Modeling',
-            value=st.session_state.model_start_date
-        )
+        col1, _, _ = st.columns(3)
+        with col1:
+            # Use the value from session state for the date input
+            model_start_date = st.date_input(
+                'Start Date for Modeling',
+                value=st.session_state.model_start_date
+            )
         
         # Update session state with the selected date
         st.session_state.model_start_date = model_start_date
@@ -311,17 +310,11 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     percentile_50 = last_month_data['percentile_50']  # Median
                     percentile_75 = last_month_data['percentile_75']
                     percentile_95 = last_month_data['percentile_95']
-                
-                    st.write(f"")
-                    st.write(f"Predicted starting waiting list size for {model_start_date.strftime('%b-%Y')} is: **{percentile_50:.0f}**.")
-                    st.write(f"This will be the starting position for modelling the impact of future capacity.")
-                    st.write(f"- **Expected range with 50% probability (25th-75th percentile):** {percentile_25:.0f} to {percentile_75:.0f}")
-                    st.write(f"- **Expected range with 90% probability (5th-95th percentile):** {percentile_5:.0f} to {percentile_95:.0f}")
 
-
-                    
                     # Add a section header
                     st.subheader("Final Predicted Waiting List Size")
+                    
+                    st.write(f"")
                     
                     # Display key predicted metrics with a focus on the median
                     st.metric(label="Predicted Waiting List Size", value=f"{percentile_50:.0f}")
@@ -330,9 +323,9 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     - **Expected Range (50% probability):** {percentile_25:.0f} to {percentile_75:.0f}
                     - **Expected Range (90% probability):** {percentile_5:.0f} to {percentile_95:.0f}
                     """)
-
+                    st.write(f"This will be the starting position for modelling the impact of future capacity.")
         
-
+        st.write(f"")
         ### **6. Validation of Prediction Methodology**
         st.subheader("Validation of Total Waiting List Prediction Methodology")
         
