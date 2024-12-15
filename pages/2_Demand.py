@@ -360,12 +360,16 @@ else:
 
 st.subheader("Planned Procedure Demand")
 
-st.subheader("Planned vs Total Procedure Demand")
+# Convert 'month' column to datetime
+if not pd.api.types.is_datetime64_any_dtype(waiting_list_df['month']):
+    waiting_list_df['month'] = pd.to_datetime(waiting_list_df['month'])
 
 # Filter data for planned procedures and procedure demand
 if 'planned procedures' in waiting_list_df.columns:
-    demand_comparison_df = waiting_list_df[(waiting_list_df['month'] >= baseline_start) & 
-                                           (waiting_list_df['specialty'] == selected_specialty)]
+    demand_comparison_df = waiting_list_df[
+        (waiting_list_df['month'] >= baseline_start) & 
+        (waiting_list_df['specialty'] == selected_specialty)
+    ]
 
     # Ensure required columns are available
     if 'additions to waiting list' in demand_comparison_df.columns:
@@ -399,6 +403,7 @@ if 'planned procedures' in waiting_list_df.columns:
             st.write(f"On average, planned procedures make up **{planned_percentage:.2f}%** of total procedure demand.")
         else:
             st.write("No data available to calculate the contribution of planned procedures.")
+
 
 
 
