@@ -315,20 +315,8 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     # Add a section header
                     st.subheader("Final Predicted Waiting List Size")
 
-                    st.markdown(f"""
-                        <div style="
-                            background-color: #f9f9f9; 
-                            padding: 20px; 
-                            border-radius: 10px; 
-                            border: 2px solid #ddd; 
-                            text-align: center; 
-                            display: inline-block;
-                            margin-bottom: 20px;">
-                            <p style="color: #555; font-size: 24px; margin: 0;">Predicted Waiting List Size</p>
-                            <h1 style="color: #f5136f; font-size: 48px; margin: 10px 0;">{percentile_50:.0f}</h1>
-                        </div>
-                    """, unsafe_allow_html=True)
-
+                    # Display the prediction in larger font
+                    st.markdown(f"### Predicted Waiting List Size: **{percentile_50:.0f}**")
                     
                     st.write(f"""
                     - **Prediction Date:** {model_start_date.strftime('%b %Y')}
