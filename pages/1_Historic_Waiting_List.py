@@ -358,7 +358,22 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                 x='month',
                 y='Total Waiting List',
                 color='Data Type',
-                labels={'
+                labels={'Total Waiting List': 'Total Waiting List', 'month': 'Month'},
+                title='Validation of Baseline Prediction Methodology',
+                height=600
+            )
+            st.plotly_chart(fig_validation, use_container_width=True)
+        
+            # Calculate evaluation metrics
+            comparison_actual_predicted = comparison_df.dropna(subset=['Actual Total Waiting List', 'Predicted Total Waiting List'])
+            mae = (comparison_actual_predicted['Actual Total Waiting List'] - comparison_actual_predicted['Predicted Total Waiting List']).abs().mean()
+            mse = ((comparison_actual_predicted['Actual Total Waiting List'] - comparison_actual_predicted['Predicted Total Waiting List']) ** 2).mean()
+        
+            st.write(f"**Mean Absolute Error (MAE):** {mae:.2f}")
+            st.write(f"**Mean Squared Error (MSE):** {mse:.2f}")
+            st.write("""
+            A lower MAE and MSE indicate better predictive accuracy. Use this information to assess the reliability of the model.
+            """)
 
 
     else:
