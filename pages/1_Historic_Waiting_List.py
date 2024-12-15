@@ -311,10 +311,6 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     percentile_75 = last_month_data['percentile_75']
                     percentile_95 = last_month_data['percentile_95']
                     
-                    st.write(f"")
-                    # Add a section header
-                    st.subheader("Final Predicted Waiting List Size")
-
                     # Display the prediction in larger font
                     st.markdown(f"### Predicted Waiting List Size: **{percentile_50:.0f}**")
                     
