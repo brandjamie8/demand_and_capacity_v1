@@ -322,6 +322,7 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                             border-radius: 10px; 
                             border: 2px solid #ddd; 
                             text-align: center; 
+                            display: inline-block;
                             margin-bottom: 20px;">
                             <p style="color: #555; font-size: 24px; margin: 0;">Predicted Waiting List Size</p>
                             <h1 style="color: #f5136f; font-size: 48px; margin: 10px 0;">{percentile_50:.0f}</h1>
