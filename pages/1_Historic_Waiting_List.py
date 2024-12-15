@@ -15,11 +15,11 @@ This page analyses the historic waiting list data and provides a predicted start
 
 # Define consistent colors for data types
 color_map = {
-    'Historic Total Waiting List': '#1f77b4',  # Blue
-    'Actual Total Waiting List': '#2ca02c',    # Green
-    'Predicted Total Waiting List': '#ff7f0e',  # Orange
-    'additions to waiting list': '#9467bd',    # Purple
-    'removals from waiting list': '#8c564b'    # Brown
+    'Historic Total Waiting List': '#006cb5',
+    'Actual Total Waiting List': '#003087',
+    'Predicted Total Waiting List': '#f5136f',
+    'additions to waiting list': 'red',
+    'removals from waiting list': 'green'
 }
 
 
@@ -62,6 +62,8 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
             height=600,
             color_discrete_map=color_map
         )
+
+        fig1.update_traces(line=dict(width=4))
 
         # Display fig1 before the baseline date selections
         fig1_placeholder = st.empty()
@@ -420,7 +422,10 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     line=dict(color='blue', width=3, dash='dash')
                 )
             )
-        
+
+            last_historic_month = historic_data['month'].max()
+            simulation_results = simulation_results[simulation_results['month'] > last_historic_month]
+            
             st.plotly_chart(fig_validation, use_container_width=True)
         
             # Calculate evaluation metrics
