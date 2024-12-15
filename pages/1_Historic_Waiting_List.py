@@ -318,12 +318,12 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     st.markdown(f"""
                         <div style="
                             background-color: #f9f9f9; 
-                            padding: 20px; 
+                            padding: 10px; 
                             border-radius: 10px; 
                             border: 2px solid #ddd; 
                             text-align: center; 
                             display: inline-block;  /* Ensures the card width matches its content */
-                            margin-bottom: 20px;">
+                            margin-bottom: 10px;">
                             <h1 style="color: #f5136f; font-size: 40px; margin: 0;">{percentile_50:.0f}</h1>
                         </div>
                     """, unsafe_allow_html=True)
