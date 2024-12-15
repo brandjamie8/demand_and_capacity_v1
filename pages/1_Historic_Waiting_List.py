@@ -296,11 +296,15 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     st.write(f"This will be the starting position for modelling the impact of future capacity.")
                     st.write(f"- **Expected range with 50% probability (25th-75th percentile):** {percentile_25:.0f} to {percentile_75:.0f}")
                     st.write(f"- **Expected range with 90% probability (5th-95th percentile):** {percentile_5:.0f} to {percentile_95:.0f}")
+
+
         ### **6. Validation of Prediction Methodology**
         st.subheader("Validation of Total Waiting List Prediction Methodology")
         
         st.write("""
-        This section validates the prediction methodology by using data from the 6 months before the baseline period to predict the baseline period. The results are compared with the actual baseline data, and the entire historic waiting list data is included in the chart for context.
+        This section validates the prediction methodology by using data from the 6 months before the baseline period to predict the baseline period. 
+        The results are averaged over multiple simulations, with the mean prediction plotted as a line, and the 50th and 95th percentiles displayed as shaded areas.
+        The entire historic waiting list data is also included in the chart for context.
         """)
         
         # Define the validation period (6 months before baseline start)
@@ -322,36 +326,41 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                 (waiting_list_specialty_df['month'] <= baseline_end_date)
             ]
             
-            # Initialize predictions for the baseline period
-            predicted_baseline = []
-            current_total = validation_data.iloc[-1]['total waiting list']  # Last total from validation period
+            # Initialize a DataFrame to store predictions for each simulation
+            simulation_results = pd.DataFrame({'month': actual_baseline_data['month']})
+            num_simulations = 100  # Number of simulations
         
-            for _, row in actual_baseline_data.iterrows():
-                sampled_addition = validation_data['additions to waiting list'].sample(n=1).values[0]
-                sampled_removal = validation_data['removals from waiting list'].sample(n=1).values[0]
-                current_total = current_total + sampled_addition - sampled_removal
-                predicted_baseline.append(current_total)
+            for sim in range(num_simulations):
+                current_total = validation_data.iloc[-1]['total waiting list']  # Last total from validation period
+                simulated_totals = []
+                for _, row in actual_baseline_data.iterrows():
+                    sampled_addition = validation_data['additions to waiting list'].sample(n=1).values[0]
+                    sampled_removal = validation_data['removals from waiting list'].sample(n=1).values[0]
+                    current_total = current_total + sampled_addition - sampled_removal
+                    simulated_totals.append(current_total)
+                simulation_results[f'simulation_{sim + 1}'] = simulated_totals
         
-            # Create a DataFrame for predicted baseline
-            predicted_baseline_df = pd.DataFrame({
-                'month': actual_baseline_data['month'],
-                'Predicted Total Waiting List': predicted_baseline
-            })
+            # Calculate percentiles and mean
+            percentiles = [5, 25, 50, 75, 95]
+            percentile_values = simulation_results.filter(like='simulation_').quantile(
+                q=[p / 100 for p in percentiles], axis=1).T
+            percentile_values.columns = [f'percentile_{p}' for p in percentiles]
+            simulation_results = pd.concat([simulation_results[['month']], percentile_values], axis=1)
         
             # Include all historic waiting list data
             historic_data = waiting_list_specialty_df[['month', 'total waiting list']].rename(
                 columns={'total waiting list': 'Historic Total Waiting List'}
             )
         
-            # Combine actual baseline, predicted baseline, and historic data for visualization
+            # Combine data for visualization
             actual_baseline = actual_baseline_data[['month', 'total waiting list']].rename(
                 columns={'total waiting list': 'Actual Total Waiting List'}
             )
             comparison_df = pd.merge(
                 historic_data, actual_baseline, on='month', how='outer'
-            ).merge(predicted_baseline_df, on='month', how='outer')
+            )
         
-            # Plot all data
+            # Plot all data and percentiles
             st.subheader("Comparison of Historic, Actual Baseline, and Predicted Baseline")
             fig_validation = px.line(
                 comparison_df.melt(id_vars='month', var_name='Data Type', value_name='Total Waiting List'),
@@ -362,12 +371,52 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                 title='Validation of Baseline Prediction Methodology',
                 height=600
             )
+        
+            # Add shaded areas for percentiles
+            fig_validation.add_traces([
+                go.Scatter(
+                    name='5th-95th Percentile',
+                    x=simulation_results['month'].tolist() + simulation_results['month'][::-1].tolist(),
+                    y=simulation_results['percentile_95'].tolist() + simulation_results['percentile_5'][::-1].tolist(),
+                    fill='toself',
+                    fillcolor='rgba(200, 200, 200, 0.2)',
+                    line=dict(color='rgba(255,255,255,0)'),
+                    hoverinfo="skip",
+                    showlegend=True
+                ),
+                go.Scatter(
+                    name='25th-75th Percentile',
+                    x=simulation_results['month'].tolist() + simulation_results['month'][::-1].tolist(),
+                    y=simulation_results['percentile_75'].tolist() + simulation_results['percentile_25'][::-1].tolist(),
+                    fill='toself',
+                    fillcolor='rgba(160, 160, 160, 0.3)',
+                    line=dict(color='rgba(255,255,255,0)'),
+                    hoverinfo="skip",
+                    showlegend=True
+                )
+            ])
+        
+            # Add mean prediction line
+            fig_validation.add_trace(
+                go.Scatter(
+                    name='Mean Prediction',
+                    x=simulation_results['month'],
+                    y=simulation_results['percentile_50'],
+                    mode='lines',
+                    line=dict(color='blue', width=3, dash='dash')
+                )
+            )
+        
             st.plotly_chart(fig_validation, use_container_width=True)
         
             # Calculate evaluation metrics
-            comparison_actual_predicted = comparison_df.dropna(subset=['Actual Total Waiting List', 'Predicted Total Waiting List'])
-            mae = (comparison_actual_predicted['Actual Total Waiting List'] - comparison_actual_predicted['Predicted Total Waiting List']).abs().mean()
-            mse = ((comparison_actual_predicted['Actual Total Waiting List'] - comparison_actual_predicted['Predicted Total Waiting List']) ** 2).mean()
+            comparison_actual_predicted = pd.merge(
+                actual_baseline_data,
+                simulation_results[['month', 'percentile_50']].rename(columns={'percentile_50': 'Predicted Total Waiting List'}),
+                on='month'
+            )
+            mae = (comparison_actual_predicted['total waiting list'] - comparison_actual_predicted['Predicted Total Waiting List']).abs().mean()
+            mse = ((comparison_actual_predicted['total waiting list'] - comparison_actual_predicted['Predicted Total Waiting List']) ** 2).mean()
         
             st.write(f"**Mean Absolute Error (MAE):** {mae:.2f}")
             st.write(f"**Mean Squared Error (MSE):** {mse:.2f}")
