@@ -423,7 +423,13 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
             st.write("""
             A lower MAE and MSE indicate better predictive accuracy. Use this information to assess the reliability of the model.
             """)
-
+            
+            # Compare final month mean prediction to actual value
+            final_month = comparison_actual_predicted.iloc[-1]
+            final_actual = final_month['total waiting list']
+            final_predicted = final_month['Predicted Total Waiting List']
+            st.write(f"**Final Month Comparison:** The actual value for the final month is {final_actual:.0f}, "
+                     f"Mean predicted value is {final_predicted:.0f}.")
 
     else:
         st.error("Uploaded files do not contain the required columns.")
