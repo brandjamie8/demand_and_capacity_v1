@@ -20,8 +20,8 @@ color_map = {
     'Actual': '#006cb5',
     'Predicted Total Waiting List': '#f5136f',
     'Predicted': '#f5136f',
-    'additions to waiting list': 'red',
-    'removals from waiting list': 'green',
+    'additions to waiting list': 'orange',
+    'removals from waiting list': 'purple',
     'Mean Prediction': '#f5136f'
 }
 
