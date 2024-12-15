@@ -300,7 +300,7 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
         st.subheader("Validation of Total Waiting List Prediction Methodology")
         
         st.write("""
-        This section validates the prediction methodology by using data from the 6 months before the baseline period to predict the baseline period. The results are compared with the actual baseline data.
+        This section validates the prediction methodology by using data from the 6 months before the baseline period to predict the baseline period. The results are compared with the actual baseline data, and the entire historic waiting list data is included in the chart for context.
         """)
         
         # Define the validation period (6 months before baseline start)
@@ -338,35 +338,28 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                 'Predicted Total Waiting List': predicted_baseline
             })
         
-            # Combine actual and predicted data for visualization
+            # Include all historic waiting list data
+            historic_data = waiting_list_specialty_df[['month', 'total waiting list']].rename(
+                columns={'total waiting list': 'Historic Total Waiting List'}
+            )
+        
+            # Combine actual baseline, predicted baseline, and historic data for visualization
+            actual_baseline = actual_baseline_data[['month', 'total waiting list']].rename(
+                columns={'total waiting list': 'Actual Total Waiting List'}
+            )
             comparison_df = pd.merge(
-                actual_baseline_data[['month', 'total waiting list']],
-                predicted_baseline_df,
-                on='month'
-            )
-            comparison_df.rename(columns={'total waiting list': 'Actual Total Waiting List'}, inplace=True)
+                historic_data, actual_baseline, on='month', how='outer'
+            ).merge(predicted_baseline_df, on='month', how='outer')
         
-            # Plot actual vs predicted baseline
-            st.subheader("Comparison of Actual and Predicted Baseline")
+            # Plot all data
+            st.subheader("Comparison of Historic, Actual Baseline, and Predicted Baseline")
             fig_validation = px.line(
-                comparison_df,
+                comparison_df.melt(id_vars='month', var_name='Data Type', value_name='Total Waiting List'),
                 x='month',
-                y=['Actual Total Waiting List', 'Predicted Total Waiting List'],
-                labels={'value': 'Total Waiting List', 'month': 'Month'},
-                title='Validation of Baseline Prediction Methodology',
-                height=600
-            )
-            st.plotly_chart(fig_validation, use_container_width=True)
-        
-            # Calculate evaluation metrics
-            mae = (comparison_df['Actual Total Waiting List'] - comparison_df['Predicted Total Waiting List']).abs().mean()
-            mse = ((comparison_df['Actual Total Waiting List'] - comparison_df['Predicted Total Waiting List']) ** 2).mean()
-        
-            st.write(f"**Mean Absolute Error (MAE):** {mae:.2f}")
-            st.write(f"**Mean Squared Error (MSE):** {mse:.2f}")
-            st.write("""
-            A lower MAE and MSE indicate better predictive accuracy. Use this information to assess the reliability of the model.
-            """)
+                y='Total Waiting List',
+                color='Data Type',
+                labels={'
+
 
     else:
         st.error("Uploaded files do not contain the required columns.")
