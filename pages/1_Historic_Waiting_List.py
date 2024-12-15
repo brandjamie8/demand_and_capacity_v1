@@ -310,12 +310,10 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     percentile_50 = last_month_data['percentile_50']  # Median
                     percentile_75 = last_month_data['percentile_75']
                     percentile_95 = last_month_data['percentile_95']
-
-                    # Add a section header
-                    st.subheader("Final Predicted Waiting List Size")
                     
                     st.write(f"")
-                    
+                    # Add a section header
+                    st.subheader("Final Predicted Waiting List Size")
                     # Display key predicted metrics with a focus on the median
                     st.metric(label="Predicted Waiting List Size", value=f"{percentile_50:.0f}")
                     st.write(f"""
@@ -324,6 +322,18 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     - **Expected Range (90% probability):** {percentile_5:.0f} to {percentile_95:.0f}
                     """)
                     st.write(f"This will be the starting position for modelling the impact of future capacity.")
+
+                    st.markdown(f"""
+                        <div style="background-color: #f9f9f9; 
+                                    padding: 20px; 
+                                    border-radius: 10px; 
+                                    border: 2px solid #ddd; 
+                                    text-align: center; 
+                                    margin-bottom: 20px;">
+                            <h1 style="color: #f5136f; font-size: 40px; margin: 0;">{percentile_50:.0f}</h1>
+                            <p style="color: #555; font-size: 18px; margin: 0;">Predicted Waiting List Size</p>
+                        </div>
+                    """, unsafe_allow_html=True)
         
         st.write(f"")
         ### **6. Validation of Prediction Methodology**
