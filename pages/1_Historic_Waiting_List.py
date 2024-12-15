@@ -318,7 +318,7 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     st.markdown(f"""
                         <div style="
                             background-color: #f9f9f9; 
-                            padding: 10px; 
+                            padding: 30px; 
                             border-radius: 10px; 
                             border: 2px solid #ddd; 
                             text-align: center; 
@@ -327,6 +327,22 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                             <h1 style="color: #f5136f; font-size: 40px; margin: 0;">{percentile_50:.0f}</h1>
                         </div>
                     """, unsafe_allow_html=True)
+
+                    # Gauge chart
+                    fig_gauge = go.Figure(go.Indicator(
+                        mode="gauge+number",
+                        value=percentile_50,
+                        title={'text': f"Predicted Waiting List for {model_start_date.strftime('%b %Y')}"},
+                        gauge={
+                            'axis': {'range': [0, percentile_95 * 1.2]},  # Set max range slightly above 95th percentile
+                            'steps': [
+                                {'range': [percentile_5, percentile_25], 'color': "lightgray"},
+                                {'range': [percentile_25, percentile_75], 'color': "gray"},
+                            ],
+                            'bar': {'color': "#f5136f"}  # Match the metric card color
+                        }
+                    ))
+                    st.plotly_chart(fig_gauge, use_container_width=True)
                     
                     st.write(f"""
                     - **Prediction Date:** {model_start_date.strftime('%b %Y')}
