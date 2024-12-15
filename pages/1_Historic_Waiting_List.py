@@ -13,6 +13,16 @@ This page analyses the historic waiting list data and provides a predicted start
 - **Modelling Start Date:** Select a future date after the latest available data. The model predicts the waiting list size up to this date.
 """)
 
+# Define consistent colors for data types
+color_map = {
+    'Historic Total Waiting List': '#1f77b4',  # Blue
+    'Actual Total Waiting List': '#2ca02c',    # Green
+    'Predicted Total Waiting List': '#ff7f0e',  # Orange
+    'additions to waiting list': '#9467bd',    # Purple
+    'removals from waiting list': '#8c564b'    # Brown
+}
+
+
 # Check if data is available in session state
 if st.session_state.waiting_list_df is not None and st.session_state.procedure_df is not None:
     waiting_list_df = st.session_state.waiting_list_df
@@ -49,7 +59,8 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
             y=['additions to waiting list', 'removals from waiting list'],
             labels={'value': 'Number of Patients', 'variable': 'Legend'},
             title='Additions and Removals from Waiting List',
-            height=600  # Adjust the height as needed
+            height=600,
+            color_discrete_map=color_map
         )
 
         # Display fig1 before the baseline date selections
@@ -124,7 +135,8 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
             y='total waiting list',
             labels={'total waiting list': 'Total Waiting List'},
             title='Total Size of the Waiting List',
-            height=600  # Adjust the height as needed
+            height=600,
+            color_discrete_map=color_map
         )
 
         # Display fig2
@@ -243,7 +255,8 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                         line_dash='Data Type',
                         labels={'total waiting list': 'Total Waiting List', 'month': 'Month'},
                         title='Total Size of the Waiting List with Predictions',
-                        height=600  # Adjust as needed
+                        height=600,
+                        color_discrete_map=color_map
                     )
                     # Add shaded areas for the percentiles
                     fig2.add_traces([
@@ -369,7 +382,8 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                 color='Data Type',
                 labels={'Total Waiting List': 'Total Waiting List', 'month': 'Month'},
                 title='Validation of Baseline Prediction Methodology',
-                height=600
+                height=600,
+                color_discrete_map=color_map
             )
         
             # Add shaded areas for percentiles
