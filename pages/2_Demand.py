@@ -359,44 +359,48 @@ else:
     st.write("Please ensure you have uploaded the required data and completed previous sections.")
 
 st.subheader("Planned Procedure Demand")
-# Filter data for planned procedures
+
+st.subheader("Planned vs Total Procedure Demand")
+
+# Filter data for planned procedures and procedure demand
 if 'planned procedures' in waiting_list_df.columns:
-    planned_df = waiting_list_df[(waiting_list_df['month'] >= baseline_start) & (waiting_list_df['specialty'] == selected_specialty)]
+    demand_comparison_df = waiting_list_df[(waiting_list_df['month'] >= baseline_start) & 
+                                           (waiting_list_df['specialty'] == selected_specialty)]
 
-    # Plot planned procedures with predicted trend
-    planned_df = planned_df.sort_values('month')
+    # Ensure required columns are available
+    if 'additions to waiting list' in demand_comparison_df.columns:
+        # Create a stacked column chart
+        fig_demand_comparison = px.bar(
+            demand_comparison_df,
+            x='month',
+            y=['planned procedures', 'additions to waiting list'],
+            labels={'value': 'Number of Procedures', 'variable': 'Type'},
+            title="Planned Procedures vs Total Procedure Demand",
+            barmode='stack',
+            height=600
+        )
 
-    # Perform linear regression to predict planned procedure trend
-    planned_months = planned_df['month'].map(pd.Timestamp.toordinal)
-    planned_procedures = planned_df['planned procedures']
+        # Update layout for better clarity
+        fig_demand_comparison.update_layout(
+            xaxis_title="Month",
+            yaxis_title="Number of Procedures",
+            legend_title="Procedure Type"
+        )
 
-    slope, intercept, _, _, _ = linregress(planned_months, planned_procedures)
+        # Display the chart in Streamlit
+        st.plotly_chart(fig_demand_comparison, use_container_width=True)
 
-    # Predict planned procedures for the next 12 months
-    future_months = pd.date_range(
-        start=baseline_end + pd.DateOffset(months=1),
-        periods=12,
-        freq='M'
-    )
-    future_months_ordinal = future_months.map(pd.Timestamp.toordinal)
-    predicted_future_procedures = intercept + slope * future_months_ordinal
+        # Calculate the percentage of planned procedures in total demand
+        total_planned = demand_comparison_df['planned procedures'].sum()
+        total_demand = demand_comparison_df['additions to waiting list'].sum()
 
-    # Create a DataFrame for plotting
-    future_df = pd.DataFrame({
-        'month': future_months,
-        'predicted_procedures': predicted_future_procedures
-    })
+        if total_demand > 0:  # To avoid division by zero
+            planned_percentage = (total_planned / total_demand) * 100
+            st.write(f"On average, planned procedures make up **{planned_percentage:.2f}%** of total procedure demand.")
+        else:
+            st.write("No data available to calculate the contribution of planned procedures.")
 
-    fig_planned = px.line(
-        x=pd.concat([planned_df['month'], future_df['month']]),
-        y=pd.concat([planned_df['planned procedures'], future_df['predicted_procedures']]),
-        labels={"x": "Month", "y": "Planned Procedures"},
-        title="Monthly Planned Procedure Demand with Predicted Trend for Next 12 Months"
-    )
-    fig_planned.add_scatter(x=planned_df['month'], y=planned_df['planned procedures'], mode='markers', name='Actual Planned Procedures')
 
-    st.plotly_chart(fig_planned, use_container_width=True)
 
-    # Summary of Total Predicted Planned Procedure Demand
-    total_predicted_planned_demand = future_df['predicted_procedures'].sum()
-    st.write(f"**Total Predicted Planned Procedure Demand over Next 12 Months:** {total_predicted_planned_demand:.0f}")
+
+
