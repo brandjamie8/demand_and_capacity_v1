@@ -16,7 +16,7 @@ This page analyses the historic waiting list data and provides a predicted start
 # Define consistent colors for data types
 color_map = {
     'Historic Total Waiting List': '#006cb5',
-    'Actual Total Waiting List': '#7C2855',
+    'Actual Total Waiting List': 'lightblue',
     'Actual': '#006cb5',
     'Predicted Total Waiting List': '#f5136f',
     'Predicted': '#f5136f',
@@ -427,7 +427,7 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     x=simulation_results['month'],
                     y=simulation_results['percentile_50'],
                     mode='lines',
-                    line=dict(color='blue', width=3, dash='dash')
+                    line=dict(color='#f5136f', width=3, dash='dash')
                 )
             )
             
