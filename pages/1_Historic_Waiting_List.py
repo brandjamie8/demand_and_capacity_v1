@@ -16,12 +16,13 @@ This page analyses the historic waiting list data and provides a predicted start
 # Define consistent colors for data types
 color_map = {
     'Historic Total Waiting List': '#006cb5',
-    'Actual Total Waiting List': '#003087',
-    'Actual': '#003087',
+    'Actual Total Waiting List': '#7C2855',
+    'Actual': '#006cb5',
     'Predicted Total Waiting List': '#f5136f',
     'Predicted': '#f5136f',
     'additions to waiting list': 'red',
-    'removals from waiting list': 'green'
+    'removals from waiting list': 'green',
+    'Mean Prediction': '#f5136f'
 }
 
 
@@ -263,6 +264,8 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                         height=600,
                         color_discrete_map=color_map
                     )
+                    fig2.update_traces(line=dict(width=3))
+                    
                     # Add shaded areas for the percentiles
                     fig2.add_traces([
                         go.Scatter(
