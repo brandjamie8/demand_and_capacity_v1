@@ -296,6 +296,77 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     st.write(f"This will be the starting position for modelling the impact of future capacity.")
                     st.write(f"- **Expected range with 50% probability (25th-75th percentile):** {percentile_25:.0f} to {percentile_75:.0f}")
                     st.write(f"- **Expected range with 90% probability (5th-95th percentile):** {percentile_5:.0f} to {percentile_95:.0f}")
+        ### **6. Validation of Prediction Methodology**
+        st.subheader("Validation of Total Waiting List Prediction Methodology")
+        
+        st.write("""
+        This section validates the prediction methodology by using data from the 6 months before the baseline period to predict the baseline period. The results are compared with the actual baseline data.
+        """)
+        
+        # Define the validation period (6 months before baseline start)
+        validation_start_date = baseline_start_date - pd.DateOffset(months=6)
+        validation_end_date = baseline_start_date - pd.DateOffset(months=1)
+        
+        # Filter validation data
+        validation_data = waiting_list_specialty_df[
+            (waiting_list_specialty_df['month'] >= validation_start_date) &
+            (waiting_list_specialty_df['month'] <= validation_end_date)
+        ]
+        
+        if validation_data.empty:
+            st.error("No data available in the validation period.")
+        else:
+            # Filter baseline data
+            actual_baseline_data = waiting_list_specialty_df[
+                (waiting_list_specialty_df['month'] >= baseline_start_date) &
+                (waiting_list_specialty_df['month'] <= baseline_end_date)
+            ]
+            
+            # Initialize predictions for the baseline period
+            predicted_baseline = []
+            current_total = validation_data.iloc[-1]['total waiting list']  # Last total from validation period
+        
+            for _, row in actual_baseline_data.iterrows():
+                sampled_addition = validation_data['additions to waiting list'].sample(n=1).values[0]
+                sampled_removal = validation_data['removals from waiting list'].sample(n=1).values[0]
+                current_total = current_total + sampled_addition - sampled_removal
+                predicted_baseline.append(current_total)
+        
+            # Create a DataFrame for predicted baseline
+            predicted_baseline_df = pd.DataFrame({
+                'month': actual_baseline_data['month'],
+                'Predicted Total Waiting List': predicted_baseline
+            })
+        
+            # Combine actual and predicted data for visualization
+            comparison_df = pd.merge(
+                actual_baseline_data[['month', 'total waiting list']],
+                predicted_baseline_df,
+                on='month'
+            )
+            comparison_df.rename(columns={'total waiting list': 'Actual Total Waiting List'}, inplace=True)
+        
+            # Plot actual vs predicted baseline
+            st.subheader("Comparison of Actual and Predicted Baseline")
+            fig_validation = px.line(
+                comparison_df,
+                x='month',
+                y=['Actual Total Waiting List', 'Predicted Total Waiting List'],
+                labels={'value': 'Total Waiting List', 'month': 'Month'},
+                title='Validation of Baseline Prediction Methodology',
+                height=600
+            )
+            st.plotly_chart(fig_validation, use_container_width=True)
+        
+            # Calculate evaluation metrics
+            mae = (comparison_df['Actual Total Waiting List'] - comparison_df['Predicted Total Waiting List']).abs().mean()
+            mse = ((comparison_df['Actual Total Waiting List'] - comparison_df['Predicted Total Waiting List']) ** 2).mean()
+        
+            st.write(f"**Mean Absolute Error (MAE):** {mae:.2f}")
+            st.write(f"**Mean Squared Error (MSE):** {mse:.2f}")
+            st.write("""
+            A lower MAE and MSE indicate better predictive accuracy. Use this information to assess the reliability of the model.
+            """)
 
     else:
         st.error("Uploaded files do not contain the required columns.")
