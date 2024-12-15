@@ -314,27 +314,28 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     st.write(f"")
                     # Add a section header
                     st.subheader("Final Predicted Waiting List Size")
-                    # Display key predicted metrics with a focus on the median
-                    st.metric(label="Predicted Waiting List Size", value=f"{percentile_50:.0f}")
+
+                    st.markdown(f"""
+                        <div style="
+                            background-color: #f9f9f9; 
+                            padding: 20px; 
+                            border-radius: 10px; 
+                            border: 2px solid #ddd; 
+                            text-align: center; 
+                            display: inline-block;  /* Ensures the card width matches its content */
+                            margin-bottom: 20px;">
+                            <p style="color: #555; font-size: 18px; margin: 0; font-weight: bold;">Predicted Waiting List Size</p>
+                            <h1 style="color: #f5136f; font-size: 40px; margin: 0;">{percentile_50:.0f}</h1>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    
                     st.write(f"""
                     - **Prediction Date:** {model_start_date.strftime('%b %Y')}
                     - **Expected Range (50% probability):** {percentile_25:.0f} to {percentile_75:.0f}
                     - **Expected Range (90% probability):** {percentile_5:.0f} to {percentile_95:.0f}
                     """)
                     st.write(f"This will be the starting position for modelling the impact of future capacity.")
-
-                    st.markdown(f"""
-                        <div style="background-color: #f9f9f9; 
-                                    padding: 20px; 
-                                    border-radius: 10px; 
-                                    border: 2px solid #ddd; 
-                                    text-align: center; 
-                                    margin-bottom: 20px;">
-                            <h1 style="color: #f5136f; font-size: 40px; margin: 0;">{percentile_50:.0f}</h1>
-                            <p style="color: #555; font-size: 18px; margin: 0;">Predicted Waiting List Size</p>
-                        </div>
-                    """, unsafe_allow_html=True)
-        
+                    
         st.write(f"")
         ### **6. Validation of Prediction Methodology**
         st.subheader("Validation of Total Waiting List Prediction Methodology")
