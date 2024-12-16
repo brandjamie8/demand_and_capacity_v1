@@ -35,11 +35,11 @@ if baseline_df.empty:
 # Get waiting list size for April and September
 april_size = waiting_list_df[
     (waiting_list_df['month_num'] == 4) & (waiting_list_df['year'] == latest_year)
-].groupby('specialty')['waiting list size'].sum()
+].groupby('specialty')['total waiting list'].sum()
 
 september_size = waiting_list_df[
     (waiting_list_df['month_num'] == 9) & (waiting_list_df['year'] == latest_year)
-].groupby('specialty')['waiting list size'].sum()
+].groupby('specialty')['total waiting list'].sum()
 
 # Calculate change in waiting list size
 waiting_list_change = (september_size - april_size).reset_index()
@@ -64,8 +64,8 @@ specialty_summary = specialty_summary.merge(september_size.reset_index(), on='sp
 specialty_summary = specialty_summary.merge(waiting_list_change, on='specialty', how='left')
 
 specialty_summary.rename(columns={
-    'waiting list size_x': 'Waiting List Size (April)',
-    'waiting list size_y': 'Waiting List Size (September)'
+    'total waiting list_x': 'Waiting List Size (April)',
+    'total waiting list_y': 'Waiting List Size (September)'
 }, inplace=True)
 
 # Calculate extrapolated values
