@@ -381,8 +381,12 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
 
             # Summary of Total Predicted Demand
             total_predicted_demand = future_df['predicted_demand'].sum()
-            st.write(f"**Total Predicted Waiting List Demand over Next 12 Months:** {total_predicted_demand:.0f}")
+            st.write(f"**Total Predicted Waiting List Referral Demand over Next 12 Months:** {total_predicted_demand:.0f}")
 
+            total_predicted_cases = total_predicted_demand * percent_additions_to_cases
+            st.write(f"**Total Predicted Waiting List Theatre Case Demand over Next 12 Months:** {total_predicted_cases:.0f}")
+
+            st.session_state.total_predicted_cases = total_predicted_cases
        
     else:
         st.error("Waiting list data does not contain the required columns.")
