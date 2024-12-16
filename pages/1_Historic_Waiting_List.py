@@ -320,7 +320,7 @@ if st.session_state.waiting_list_df is not None and st.session_state.procedure_d
                     - **Expected Range (90% probability):** {percentile_5:.0f} to {percentile_95:.0f}
                     """)
                     st.write(f"This will be the starting position for modelling the impact of future capacity.")
-                    st.session_state['waiting_list_start_percentile_50'] = percentile_50
+                    st.session_state['waiting_list_start'] = percentile_50
                     
         st.write(f"")
         ### **6. Validation of Prediction Methodology**
