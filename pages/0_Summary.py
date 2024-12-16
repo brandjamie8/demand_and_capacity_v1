@@ -14,22 +14,31 @@ waiting_list_df = st.session_state.waiting_list_df
 if not pd.api.types.is_datetime64_any_dtype(waiting_list_df['month']):
     waiting_list_df['month'] = pd.to_datetime(waiting_list_df['month'])
 
-# Identify the most recent April-September period
-waiting_list_df['year'] = waiting_list_df['month'].dt.year
-waiting_list_df['month_num'] = waiting_list_df['month'].dt.month
+# User input for baseline period
+st.subheader("Select Baseline Period")
+min_date = waiting_list_df['month'].min()
+max_date = waiting_list_df['month'].max()
 
-# Filter for April to September data
-baseline_df = waiting_list_df[
-    (waiting_list_df['month_num'] >= 4) & (waiting_list_df['month_num'] <= 9)
-]
+baseline_start = st.date_input("Baseline Start Month", min_date, min_value=min_date, max_value=max_date)
+baseline_end = st.date_input("Baseline End Month", max_date, min_value=baseline_start, max_value=max_date)
 
-# Get the most recent year with complete data for April-September
-latest_year = baseline_df['year'].max()
-baseline_df = baseline_df[baseline_df['year'] == latest_year]
+# Validate baseline period
+if baseline_start > baseline_end:
+    st.error("Baseline start date must be before or equal to the end date.")
+    st.stop()
+
+# Filter waiting list data for the baseline period
+baseline_start = pd.to_datetime(baseline_start).to_period('M').to_timestamp('M')
+baseline_end = pd.to_datetime(baseline_end).to_period('M').to_timestamp('M')
+
+baseline_df = waiting_list_df[(waiting_list_df['month'] >= baseline_start) & (waiting_list_df['month'] <= baseline_end)]
+
+# Get the number of months in the baseline period
+num_baseline_months = baseline_df['month'].nunique()
 
 # Check if there is sufficient data
 if baseline_df.empty:
-    st.error("No data available for the last April–September period.")
+    st.error("No data available for the selected baseline period.")
     st.stop()
 
 # Get waiting list size for April and September
