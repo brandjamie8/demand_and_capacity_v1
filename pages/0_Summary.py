@@ -10,22 +10,45 @@ if 'waiting_list_df' not in st.session_state or st.session_state.waiting_list_df
 
 waiting_list_df = st.session_state.waiting_list_df
 
-# Retrieve baseline period from session state
-if 'baseline_start_date' not in st.session_state or 'baseline_end_date' not in st.session_state:
-    st.error("Baseline period not found. Please set the baseline period in the previous page.")
+# Convert the 'month' column to datetime if not already
+if not pd.api.types.is_datetime64_any_dtype(waiting_list_df['month']):
+    waiting_list_df['month'] = pd.to_datetime(waiting_list_df['month'])
+
+# Identify the most recent April-September period
+waiting_list_df['year'] = waiting_list_df['month'].dt.year
+waiting_list_df['month_num'] = waiting_list_df['month'].dt.month
+
+# Filter for April to September data
+baseline_df = waiting_list_df[
+    (waiting_list_df['month_num'] >= 4) & (waiting_list_df['month_num'] <= 9)
+]
+
+# Get the most recent year with complete data for April-September
+latest_year = baseline_df['year'].max()
+baseline_df = baseline_df[baseline_df['year'] == latest_year]
+
+# Check if there is sufficient data
+if baseline_df.empty:
+    st.error("No data available for the last April–September period.")
     st.stop()
 
-# Convert baseline dates to month-end Timestamps
-baseline_start = pd.to_datetime(st.session_state.baseline_start_date).to_period('M').to_timestamp('M')
-baseline_end = pd.to_datetime(st.session_state.baseline_end_date).to_period('M').to_timestamp('M')
+# Get waiting list size for April and September
+april_size = waiting_list_df[
+    (waiting_list_df['month_num'] == 4) & (waiting_list_df['year'] == latest_year)
+].groupby('specialty')['waiting list size'].sum()
+
+september_size = waiting_list_df[
+    (waiting_list_df['month_num'] == 9) & (waiting_list_df['year'] == latest_year)
+].groupby('specialty')['waiting list size'].sum()
+
+# Calculate change in waiting list size
+waiting_list_change = (september_size - april_size).reset_index()
+waiting_list_change.columns = ['specialty', 'Waiting List Change']
 
 # Calculate the number of months in the baseline period
-num_baseline_months = len(pd.date_range(start=baseline_start, end=baseline_end, freq='M'))
+num_baseline_months = baseline_df['month'].nunique()
 
-# Filter baseline data
-baseline_df = waiting_list_df[(waiting_list_df['month'] >= baseline_start) & (waiting_list_df['month'] <= baseline_end)]
-
-# Group by specialty and calculate metrics
+# Group by specialty and calculate baseline metrics
 specialty_summary = baseline_df.groupby('specialty').agg({
     'additions to waiting list': 'sum',
     'removals from waiting list': 'sum',
@@ -35,6 +58,16 @@ specialty_summary = baseline_df.groupby('specialty').agg({
     'cases': 'sum'
 }).reset_index()
 
+# Merge waiting list size data
+specialty_summary = specialty_summary.merge(april_size.reset_index(), on='specialty', how='left')
+specialty_summary = specialty_summary.merge(september_size.reset_index(), on='specialty', how='left')
+specialty_summary = specialty_summary.merge(waiting_list_change, on='specialty', how='left')
+
+specialty_summary.rename(columns={
+    'waiting list size_x': 'Waiting List Size (April)',
+    'waiting list size_y': 'Waiting List Size (September)'
+}, inplace=True)
+
 # Calculate extrapolated values
 scaling_factor = 12 / num_baseline_months
 specialty_summary['Additions (12-Month)'] = specialty_summary['additions to waiting list'] * scaling_factor
@@ -43,6 +76,22 @@ specialty_summary['Cases (12-Month)'] = specialty_summary['cases'] * scaling_fac
 
 # Calculate deficit
 specialty_summary['Deficit (12-Month)'] = specialty_summary['Additions (12-Month)'] - specialty_summary['Removals (12-Month)']
+
+# Add a message about the expected change to the waiting list
+specialty_summary['Expected Change'] = specialty_summary.apply(
+    lambda row: (
+        f"Increase in waiting list by {row['Deficit (12-Month)']:.0f}" if row['Deficit (12-Month)'] > 0 else
+        f"Decrease in waiting list by {-row['Deficit (12-Month)']:.0f}" if row['Deficit (12-Month)'] < 0 else
+        "No change in waiting list"
+    ),
+    axis=1
+)
+
+# Add a comparison between waiting list change and deficit
+specialty_summary['Change vs. Deficit'] = specialty_summary.apply(
+    lambda row: row['Waiting List Change'] - row['Deficit (12-Month)'],
+    axis=1
+)
 
 # Determine capacity status message
 session_duration_hours = 4
@@ -59,21 +108,33 @@ specialty_summary['Capacity Status'] = specialty_summary.apply(
 # Select relevant columns to display
 columns_to_display = [
     'specialty', 
-    'Additions (12-Month)', 
-    'Cases (12-Month)', 
-    'Removals (12-Month)', 
-    'Deficit (12-Month)', 
+    'Waiting List Size (April)',
+    'Waiting List Size (September)',
+    'Waiting List Change',
+    'additions to waiting list',
+    'removals from waiting list',
+    'sessions',
+    'cancelled sessions',
+    'Additions (12-Month)',
+    'Removals (12-Month)',
+    'Deficit (12-Month)',
+    'Expected Change',
+    'Change vs. Deficit',
     'Capacity Status'
 ]
 
 # Rename columns for better readability
 specialty_summary_display = specialty_summary[columns_to_display].rename(columns={
     'specialty': 'Specialty',
+    'additions to waiting list': 'Additions (Baseline)',
+    'removals from waiting list': 'Removals (Baseline)',
+    'sessions': 'Sessions (Baseline)',
+    'cancelled sessions': 'Cancelled Sessions (Baseline)',
     'Additions (12-Month)': 'Additions (12M)',
-    'Cases (12-Month)': 'Cases (12M)',
     'Removals (12-Month)': 'Removals (12M)',
     'Deficit (12-Month)': 'Deficit (12M)',
-    'Capacity Status': 'Status'
+    'Expected Change': 'Expected WL Change',
+    'Change vs. Deficit': 'Change vs. Deficit (12M)'
 })
 
 # Display the summary table
