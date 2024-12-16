@@ -108,15 +108,14 @@ specialty_summary['Capacity Status'] = specialty_summary.apply(
 # Select relevant columns to display
 columns_to_display = [
     'specialty', 
-    'Waiting List Size (April)',
-    'Waiting List Size (September)',
-    'Waiting List Change',
     'additions to waiting list',
     'removals from waiting list',
     'Additions (12-Month)',
     'Removals (12-Month)',
     'Expected Change',
-    'Change vs. Deficit',
+    'Waiting List Size (April)',
+    'Waiting List Size (September)',
+    'Waiting List Change',    
     'Capacity Status'
 ]
 
