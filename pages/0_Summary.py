@@ -16,14 +16,14 @@ if not pd.api.types.is_datetime64_any_dtype(waiting_list_df['month']):
 
 # User input for baseline period
 st.subheader("Select Baseline Period")
-min_date = '2024-04-30'
-max_date = '2024-09-30'
+min_date = df['dates'].min().date()
+max_date = df['dates'].max().date()
 
 col1, col2, _, _ = st.columns(4)
 with col1:
-    baseline_start = st.date_input("Baseline Start Month", min_date, min_value=min_date, max_value=max_date)
+    baseline_start = st.date_input("Baseline Start Month", datetime.date(2024, 4, 30), min_value=min_date, max_value=max_date)
 with col2:
-    baseline_end = st.date_input("Baseline End Month", max_date, min_value=baseline_start, max_value=max_date)
+    baseline_end = st.date_input("Baseline End Month", datetime.date(2024, 9, 30), min_value=baseline_start, max_value=max_date)
 
 # Validate baseline period
 if baseline_start > baseline_end:
