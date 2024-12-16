@@ -437,6 +437,9 @@ if 'planned procedures' in waiting_list_df.columns:
         if total_demand > 0:  # To avoid division by zero
             planned_percentage = (total_planned / total_demand) * 100
             st.write(f"On average, planned procedures make up **{planned_percentage:.2f}%** of total procedure demand.")
+            planned_cases = planned_percentage * total_predicted_cases
+            st.write(f"This translates to **{planned_cases:.0f}** cases over the next 12 months.")
+            
         else:
             st.write("No data available to calculate the contribution of planned procedures.")
 
