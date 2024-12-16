@@ -34,7 +34,8 @@ if 'procedure_df' in st.session_state and st.session_state.procedure_df is not N
 
         # Filter data based on selected specialty
         procedure_specialty_df = procedure_df[procedure_df['specialty'] == selected_specialty]
-
+          
+        
         # Calculate demand minutes
         procedure_specialty_df['demand minutes'] = procedure_specialty_df['total referrals'] * procedure_specialty_df['average duration']
 
@@ -73,38 +74,7 @@ if 'procedure_df' in st.session_state and st.session_state.procedure_df is not N
         # Message about next steps
         st.write("The next step is to analyse the time series of additions to the waiting list to determine whether there is an increase over time.")
 
-        # --- Baseline Analysis ---
-        st.subheader("Baseline Analysis")
-        
-        # Calculate DTAs from procedure DataFrame
-        baseline_procedure_df = procedure_specialty_df[
-            (procedure_specialty_df['month'] >= baseline_start) & 
-            (procedure_specialty_df['month'] <= baseline_end)
-        ]
-        baseline_total_dtas = baseline_procedure_df['total referrals'].sum()
-        baseline_scaled_dtas = (baseline_total_dtas / num_baseline_months) * 12
-        
-        st.write(f"**Decisions to Admit (DTAs) in Baseline Period (Scaled to Year):** {baseline_scaled_dtas:.0f}")
-        
-        # Calculate additions to the waiting list from the waiting list DataFrame
-        baseline_waiting_list_df = waiting_list_specialty_df[
-            (waiting_list_specialty_df['month'] >= baseline_start) & 
-            (waiting_list_specialty_df['month'] <= baseline_end)
-        ]
-        baseline_total_additions = baseline_waiting_list_df['additions to waiting list'].sum()
-        baseline_scaled_additions = (baseline_total_additions / num_baseline_months) * 12
-        
-        # Percentage of DTAs added to the waiting list
-        percent_dtas_to_additions = (baseline_scaled_additions / baseline_scaled_dtas) * 100
-        st.write(f"**Additions to Waiting List (Scaled to Year):** {baseline_scaled_additions:.0f} ({percent_dtas_to_additions:.2f}% of DTAs)")
-        
-        # Calculate theatre cases from the waiting list DataFrame
-        baseline_total_cases = baseline_waiting_list_df['cases'].sum()
-        baseline_scaled_cases = (baseline_total_cases / num_baseline_months) * 12
-        
-        # Percentage of additions that are cases
-        percent_additions_to_cases = (baseline_scaled_cases / baseline_scaled_additions) * 100
-        st.write(f"**Theatre Cases (Scaled to Year):** {baseline_scaled_cases:.0f} ({percent_additions_to_cases:.2f}% of Additions)")
+
 
 
 import plotly.graph_objects as go
@@ -166,6 +136,43 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
             # Sort by month
             waiting_list_specialty_df = waiting_list_specialty_df.sort_values('month')
 
+
+            # --- Baseline Analysis ---
+            st.subheader("Baseline Analysis")
+            
+            # Calculate DTAs from procedure DataFrame
+            baseline_procedure_df = procedure_specialty_df[
+                (procedure_specialty_df['month'] >= baseline_start) & 
+                (procedure_specialty_df['month'] <= baseline_end)
+            ]
+            baseline_total_dtas = baseline_procedure_df['total referrals'].sum()
+            baseline_scaled_dtas = (baseline_total_dtas / num_baseline_months) * 12
+            
+            st.write(f"**Decisions to Admit (DTAs) in Baseline Period (Scaled to Year):** {baseline_scaled_dtas:.0f}")
+            
+            # Calculate additions to the waiting list from the waiting list DataFrame
+            baseline_waiting_list_df = waiting_list_specialty_df[
+                (waiting_list_specialty_df['month'] >= baseline_start) & 
+                (waiting_list_specialty_df['month'] <= baseline_end)
+            ]
+            baseline_total_additions = baseline_waiting_list_df['additions to waiting list'].sum()
+            baseline_scaled_additions = (baseline_total_additions / num_baseline_months) * 12
+            
+            # Percentage of DTAs added to the waiting list
+            percent_dtas_to_additions = (baseline_scaled_additions / baseline_scaled_dtas) * 100
+            st.write(f"**Additions to Waiting List (Scaled to Year):** {baseline_scaled_additions:.0f} ({percent_dtas_to_additions:.2f}% of DTAs)")
+            
+            # Calculate theatre cases from the waiting list DataFrame
+            baseline_total_cases = baseline_waiting_list_df['cases'].sum()
+            baseline_scaled_cases = (baseline_total_cases / num_baseline_months) * 12
+            
+            # Percentage of additions that are cases
+            percent_additions_to_cases = (baseline_scaled_cases / baseline_scaled_additions) * 100
+            st.write(f"**Theatre Cases (Scaled to Year):** {baseline_scaled_cases:.0f} ({percent_additions_to_cases:.2f}% of Additions)")
+
+
+
+            
             # --- NEW PART: Filter data for the 12 months before the baseline start date ---
             start_12_months_prior = baseline_start - pd.DateOffset(months=12)
             pre_baseline_df = waiting_list_specialty_df[
