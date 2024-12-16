@@ -77,15 +77,15 @@ specialty_summary['Cases (12-Month)'] = specialty_summary['cases'] * scaling_fac
 # Calculate deficit
 specialty_summary['Deficit (12-Month)'] = specialty_summary['Additions (12-Month)'] - specialty_summary['Removals (12-Month)']
 
-# Add a message about the expected change to the waiting list
 specialty_summary['Expected Change'] = specialty_summary.apply(
     lambda row: (
-        f"Increase in waiting list by {row['Deficit (12-Month)']:.0f}" if row['Deficit (12-Month)'] > 0 else
-        f"Decrease in waiting list by {-row['Deficit (12-Month)']:.0f}" if row['Deficit (12-Month)'] < 0 else
+        f"Increase in waiting list by {row['additions to waiting list'] - row['removals from waiting list']:.0f}" if row['additions to waiting list'] > row['removals from waiting list'] else
+        f"Decrease in waiting list by {row['removals from waiting list'] - row['additions to waiting list']:.0f}" if row['removals from waiting list'] > row['additions to waiting list'] else
         "No change in waiting list"
     ),
     axis=1
 )
+
 
 # Add a comparison between waiting list change and deficit
 specialty_summary['Change vs. Deficit'] = specialty_summary.apply(
@@ -110,12 +110,12 @@ columns_to_display = [
     'specialty', 
     'additions to waiting list',
     'removals from waiting list',
-    'Additions (12-Month)',
-    'Removals (12-Month)',
     'Expected Change',
     'Waiting List Size (April)',
     'Waiting List Size (September)',
-    'Waiting List Change',    
+    'Waiting List Change',  
+    'Additions (12-Month)',
+    'Removals (12-Month)',
     'Capacity Status'
 ]
 
