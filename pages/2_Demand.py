@@ -16,8 +16,6 @@ if 'procedure_df' in st.session_state and st.session_state.procedure_df is not N
     # Ensure required columns are present
     required_columns = ['specialty', 'procedure', 'total referrals', 'average duration']
     if all(column in procedure_df.columns for column in required_columns):
-        st.subheader("Procedure Demand")
-        # Use selected specialty from session state
         specialties = procedure_df['specialty'].unique()
         if 'selected_specialty' not in st.session_state or st.session_state.selected_specialty not in specialties:
             st.session_state.selected_specialty = specialties[0]
