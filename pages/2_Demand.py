@@ -132,27 +132,34 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
             baseline_total_dtas = baseline_procedure_df['total referrals'].sum()
             baseline_scaled_dtas = (baseline_total_dtas / num_baseline_months) * 12
             
-            st.write(f"**Decisions to Admit (DTAs) in Baseline Period (Scaled to Year):** {baseline_scaled_dtas:.0f}")
-            
-            # Calculate additions to the waiting list from the waiting list DataFrame
+            # Filter baseline data for waiting list additions and cases
             baseline_waiting_list_df = waiting_list_specialty_df[
                 (waiting_list_specialty_df['month'] >= baseline_start) & 
                 (waiting_list_specialty_df['month'] <= baseline_end)
             ]
+            
+            # Calculate total additions to the waiting list in the baseline period
             baseline_total_additions = baseline_waiting_list_df['additions to waiting list'].sum()
+            num_baseline_months = len(pd.date_range(start=baseline_start, end=baseline_end, freq='M'))
+            
+            # Scale additions to 12 months
             baseline_scaled_additions = (baseline_total_additions / num_baseline_months) * 12
+            st.write(f"**Additions to the Waiting List (Scaled to Year):** {baseline_scaled_additions:.0f}")
             
-            # Percentage of DTAs added to the waiting list
-            percent_dtas_to_additions = (baseline_scaled_additions / baseline_scaled_dtas) * 100
-            st.write(f"**Additions to Waiting List (Scaled to Year):** {baseline_scaled_additions:.0f} ({percent_dtas_to_additions:.2f}% of DTAs)")
-            
-            # Calculate theatre cases from the waiting list DataFrame
+            # Calculate total cases (theatre) and removals
             baseline_total_cases = baseline_waiting_list_df['cases'].sum()
-            baseline_scaled_cases = (baseline_total_cases / num_baseline_months) * 12
+            baseline_total_removals = baseline_waiting_list_df['removals from waiting list'].sum()
             
-            # Percentage of additions that are cases
-            percent_additions_to_cases = (baseline_scaled_cases / baseline_scaled_additions) * 100
-            st.write(f"**Theatre Cases (Scaled to Year):** {baseline_scaled_cases:.0f} ({percent_additions_to_cases:.2f}% of Additions)")
+            # Calculate % of additions that result in cases
+            percent_additions_to_cases = (baseline_total_cases / baseline_total_additions) if baseline_total_additions > 0 else 0
+            st.write(f"**Percentage of Additions Resulting in Cases:** {percent_additions_to_cases:.2%}")
+            
+            # Calculate cases needed to remove all additions
+            cases_needed_per_addition = percent_additions_to_cases
+            baseline_scaled_cases_needed = baseline_scaled_additions * cases_needed_per_addition
+            
+            st.write(f"**Theatre Cases Needed to Remove Demand (Scaled to Year):** {baseline_scaled_cases_needed:.0f}")
+            
 
 
 
