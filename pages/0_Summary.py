@@ -41,21 +41,18 @@ if baseline_df.empty:
     st.error("No data available for the selected baseline period.")
     st.stop()
 
-# Get waiting list size for April and September
+# Get waiting list size for start and end months of the baseline period
 april_size = waiting_list_df[
-    (waiting_list_df['month_num'] == 4) & (waiting_list_df['year'] == latest_year)
+    (waiting_list_df['month'] == baseline_start)
 ].groupby('specialty')['total waiting list'].sum()
 
 september_size = waiting_list_df[
-    (waiting_list_df['month_num'] == 9) & (waiting_list_df['year'] == latest_year)
+    (waiting_list_df['month'] == baseline_end)
 ].groupby('specialty')['total waiting list'].sum()
 
 # Calculate change in waiting list size
 waiting_list_change = (september_size - april_size).reset_index()
 waiting_list_change.columns = ['specialty', 'Waiting List Change']
-
-# Calculate the number of months in the baseline period
-num_baseline_months = baseline_df['month'].nunique()
 
 # Group by specialty and calculate baseline metrics
 specialty_summary = baseline_df.groupby('specialty').agg({
@@ -73,8 +70,8 @@ specialty_summary = specialty_summary.merge(september_size.reset_index(), on='sp
 specialty_summary = specialty_summary.merge(waiting_list_change, on='specialty', how='left')
 
 specialty_summary.rename(columns={
-    'total waiting list_x': 'Waiting List Size (April)',
-    'total waiting list_y': 'Waiting List Size (September)'
+    'total waiting list_x': 'Waiting List Size (Start)',
+    'total waiting list_y': 'Waiting List Size (End)'
 }, inplace=True)
 
 # Calculate extrapolated values
@@ -86,15 +83,15 @@ specialty_summary['Cases (12-Month)'] = specialty_summary['cases'] * scaling_fac
 # Calculate deficit
 specialty_summary['Deficit (12-Month)'] = specialty_summary['Additions (12-Month)'] - specialty_summary['Removals (12-Month)']
 
+# Add a message about the expected change to the waiting list
 specialty_summary['Expected Change'] = specialty_summary.apply(
     lambda row: (
-        f"Increase in waiting list by {row['additions to waiting list'] - row['removals from waiting list']:.0f}" if row['additions to waiting list'] > row['removals from waiting list'] else
-        f"Decrease in waiting list by {row['removals from waiting list'] - row['additions to waiting list']:.0f}" if row['removals from waiting list'] > row['additions to waiting list'] else
+        f"Increase in waiting list by {row['Deficit (12-Month)']:.0f}" if row['Deficit (12-Month)'] > 0 else
+        f"Decrease in waiting list by {-row['Deficit (12-Month)']:.0f}" if row['Deficit (12-Month)'] < 0 else
         "No change in waiting list"
     ),
     axis=1
 )
-
 
 # Add a comparison between waiting list change and deficit
 specialty_summary['Change vs. Deficit'] = specialty_summary.apply(
@@ -121,8 +118,8 @@ columns_to_display = [
     'cases',
     'removals from waiting list',
     'Expected Change',
-    'Waiting List Size (April)',
-    'Waiting List Size (September)',
+    'Waiting List Size (Start)',
+    'Waiting List Size (End)',
     'Waiting List Change',  
     'Additions (12-Month)',
     'Removals (12-Month)',
