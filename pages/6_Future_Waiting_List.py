@@ -32,7 +32,7 @@ if 'waiting_list_removals' not in st.session_state:
 waiting_list_start = st.number_input(
     'Waiting List at the Start of the Year',
     min_value=0,
-    value=st.session_state.waiting_list_start,
+    value=int(st.session_state.waiting_list_start),
     key='input_waiting_list_start'
 )
 waiting_list_additions = st.number_input(
