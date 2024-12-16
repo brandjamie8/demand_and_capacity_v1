@@ -20,12 +20,14 @@ if 'procedure_df' in st.session_state and st.session_state.procedure_df is not N
         if 'selected_specialty' not in st.session_state or st.session_state.selected_specialty not in specialties:
             st.session_state.selected_specialty = specialties[0]
 
-        selected_specialty = st.selectbox(
-            'Select Specialty',
-            specialties,
-            index=list(specialties).index(st.session_state.selected_specialty),
-            key='procedure_demand_specialty_select'
-        )
+        col1, _, _ = st.columns(3)
+        with col1:
+            selected_specialty = st.selectbox(
+                'Select Specialty',
+                specialties,
+                index=list(specialties).index(st.session_state.selected_specialty),
+                key='procedure_demand_specialty_select'
+            )
 
         # Save the selected specialty to session state
         st.session_state.selected_specialty = selected_specialty
@@ -84,8 +86,11 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
         st.session_state.baseline_end_date = pd.to_datetime(st.session_state.baseline_end_date) + pd.offsets.MonthEnd(0)
 
         # Allow the user to adjust baseline dates
-        st.session_state.baseline_start_date = st.date_input("Baseline Start Date (Month End)", value=st.session_state.baseline_start_date)
-        st.session_state.baseline_end_date = st.date_input("Baseline End Date (Month End)", value=st.session_state.baseline_end_date)
+        col1, col2, _, _ = st.columns(4)
+        with col1:
+            st.session_state.baseline_start_date = st.date_input("Baseline Start Date (Month End)", value=st.session_state.baseline_start_date)
+        with col2:
+            st.session_state.baseline_end_date = st.date_input("Baseline End Date (Month End)", value=st.session_state.baseline_end_date)
 
         baseline_start_date = st.session_state.baseline_start_date
         baseline_end_date = st.session_state.baseline_end_date
