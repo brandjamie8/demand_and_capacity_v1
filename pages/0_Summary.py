@@ -109,6 +109,7 @@ specialty_summary['Capacity Status'] = specialty_summary.apply(
 columns_to_display = [
     'specialty', 
     'additions to waiting list',
+    'cases',
     'removals from waiting list',
     'Expected Change',
     'Waiting List Size (April)',
