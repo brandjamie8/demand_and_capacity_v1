@@ -17,7 +17,7 @@ if not pd.api.types.is_datetime64_any_dtype(waiting_list_df['month']):
 # User input for baseline period
 st.subheader("Select Baseline Period")
 min_date = '2024-04-30'
-max_date = '2024-09-31'
+max_date = '2024-09-30'
 
 col1, col2, _, _ = st.columns(4)
 with col1:
