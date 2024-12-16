@@ -44,7 +44,7 @@ waiting_list_additions = st.number_input(
 waiting_list_removals = st.number_input(
     'Number Removed from Waiting List During the Year',
     min_value=0,
-    value=st.session_state.waiting_list_removals,
+    value=int(st.session_state.waiting_list_removals),
     key='input_waiting_list_removals'
 )
 
