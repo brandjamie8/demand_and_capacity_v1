@@ -1,4 +1,4 @@
-month,specialty,procedure,total referrals,average duration
+ï»¿month,specialty,procedure,total referrals,average duration
 30/06/2022,ENT,ENT - Bilateral dissection tonsillectomy,8,60
 30/06/2022,ENT,ENT - Combined approach tympanoplasty EN,1,120
 30/06/2022,ENT,ENT - Excision Of Lesion Of Mouth Nec,1,60
@@ -124,7 +124,7 @@ month,specialty,procedure,total referrals,average duration
 31/03/2023,ENT,ENT - Atticotomy,1,240
 31/03/2023,ENT,ENT - Curettage Cauterisation Lesion Ski,1,120
 31/03/2023,ENT,Gen - Exploration of parathyroid gland,1,120
-31/03/2023,General Surgery,GEN - Laparoscopic Ileocaecal Resection,1,200
+31/03/2023,General Surgery,GEN - LaparoscopicÂ Ileocaecal Resection,1,200
 31/03/2023,General Surgery,Gen - Repair of epigastric hernia,2,90
 31/03/2023,General Surgery,Gen - Repair of umbilical hernia,4,90
 31/03/2023,General Surgery,GI - Anterior resection of rectum with c,2,120
@@ -2311,7 +2311,7 @@ month,specialty,procedure,total referrals,average duration
 30/04/2024,Urology,GU - Biopsy of scrotal lesion,1,60
 30/04/2024,Urology,GU - Vasectomy,1,60
 31/05/2024,ENT,ENT - Atticotomy,4,240
-31/05/2024,General Surgery,GEN - Laparoscopic Ileocaecal Resection,1,200
+31/05/2024,General Surgery,GEN - LaparoscopicÂ Ileocaecal Resection,1,200
 31/05/2024,General Surgery,Gen - Repair of epigastric hernia,1,90
 31/05/2024,General Surgery,Gen - Repair of umbilical hernia,4,90
 31/05/2024,General Surgery,Gen - Reversal of ileostomy,2,120
