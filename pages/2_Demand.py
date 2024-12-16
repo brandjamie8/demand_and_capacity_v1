@@ -280,18 +280,25 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
                 freq='M'
             )
             
+            # Use baseline data scaled to 12 months for prediction when using the average
             if use_average_for_prediction:
-                future_demand = [average_demand] * len(future_months)
-                prediction_method = "Average"
+                # Calculate the average additions per month from the baseline and scale to 12 months
+                baseline_total_additions = baseline_procedure_df['total referrals'].sum()
+                baseline_scaled_monthly_additions = baseline_total_additions / num_baseline_months
+                future_demand = [baseline_scaled_monthly_additions] * len(future_months)
+                prediction_method = "Average (Baseline)"
             else:
+                # Use regression-based prediction if average is not chosen
                 future_months_ordinal = future_months.map(pd.Timestamp.toordinal)
                 future_demand = intercept + slope * future_months_ordinal
                 prediction_method = "Regression"
-
+            
+            # Create a DataFrame for future predictions
             future_df = pd.DataFrame({
                 'month': future_months,
                 'predicted_demand': future_demand
             })
+
 
             # --- END OF NEW PART ---
 
