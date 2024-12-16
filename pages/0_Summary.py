@@ -19,8 +19,11 @@ st.subheader("Select Baseline Period")
 min_date = waiting_list_df['month'].min()
 max_date = waiting_list_df['month'].max()
 
-baseline_start = st.date_input("Baseline Start Month", min_date, min_value=min_date, max_value=max_date)
-baseline_end = st.date_input("Baseline End Month", max_date, min_value=baseline_start, max_value=max_date)
+col1, col2, _, _ = st.columns(4)
+with col1:
+    baseline_start = st.date_input("Baseline Start Month", min_date, min_value=min_date, max_value=max_date)
+with col2:
+    baseline_end = st.date_input("Baseline End Month", max_date, min_value=baseline_start, max_value=max_date)
 
 # Validate baseline period
 if baseline_start > baseline_end:
