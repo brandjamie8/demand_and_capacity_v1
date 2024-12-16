@@ -21,9 +21,9 @@ max_date = waiting_list_df['month'].max().date()
 
 col1, col2, _, _ = st.columns(4)
 with col1:
-    baseline_start = st.date_input("Baseline Start Month", datetime.date(2024, 4, 30), min_value=min_date, max_value=max_date)
+    baseline_start = st.date_input("Baseline Start Month", '2024-04-30', min_value=min_date, max_value=max_date)
 with col2:
-    baseline_end = st.date_input("Baseline End Month", datetime.date(2024, 9, 30), min_value=baseline_start, max_value=max_date)
+    baseline_end = st.date_input("Baseline End Month", '2024-09-30', min_value=baseline_start, max_value=max_date)
 
 # Validate baseline period
 if baseline_start > baseline_end:
