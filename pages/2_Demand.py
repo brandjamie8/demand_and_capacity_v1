@@ -413,6 +413,52 @@ if 'planned procedures' in waiting_list_df.columns:
 
 
 
+# Debugging Section
+st.header("Debugging: Baseline Additions and Scaling")
+
+# Display baseline period information
+st.subheader("Baseline Period Details")
+st.write(f"**Baseline Start Date:** {baseline_start}")
+st.write(f"**Baseline End Date:** {baseline_end}")
+st.write(f"**Number of Baseline Months:** {num_baseline_months}")
+
+# Display the baseline DataFrame
+st.subheader("Baseline Data (Filtered)")
+st.write("Here are the rows included in the baseline period:")
+st.dataframe(baseline_procedure_df)
+
+# Check for duplicates and missing values
+st.subheader("Data Quality Checks")
+duplicates = baseline_procedure_df[baseline_procedure_df.duplicated()]
+missing_values = baseline_procedure_df['total referrals'].isna().sum()
+st.write(f"**Number of Duplicated Rows:** {len(duplicates)}")
+st.write(f"**Number of Missing Values in 'total referrals':** {missing_values}")
+
+# Display intermediate calculations
+st.subheader("Intermediate Calculations")
+baseline_total_additions = baseline_procedure_df['total referrals'].sum()
+scaling_factor = 12 / num_baseline_months
+scaled_yearly_additions = baseline_total_additions * scaling_factor
+st.write(f"**Total Additions in Baseline Period:** {baseline_total_additions}")
+st.write(f"**Scaling Factor (12 / Baseline Months):** {scaling_factor:.2f}")
+st.write(f"**Scaled Yearly Additions (Baseline):** {scaled_yearly_additions:.0f}")
+
+# Compare to predicted additions
+st.subheader("Comparison to Predicted Additions")
+if 'future_df' in locals() or 'future_df' in globals():
+    predicted_additions = future_df['predicted_demand'].sum()
+    st.write(f"**Predicted Additions Over Next 12 Months:** {predicted_additions:.0f}")
+    difference = scaled_yearly_additions - predicted_additions
+    st.write(f"**Difference Between Scaled Baseline and Predicted Additions:** {difference:.0f}")
+else:
+    st.write("No predicted additions data available for comparison.")
+
+# Optional: Print additional details for debugging
+with st.expander("Detailed Debugging Information"):
+    st.write("### Baseline DataFrame")
+    st.dataframe(baseline_procedure_df)
+    st.write("### Duplicate Rows")
+    st.dataframe(duplicates)
 
 
 
