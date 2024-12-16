@@ -48,9 +48,7 @@ if 'procedure_df' in st.session_state and st.session_state.procedure_df is not N
         baseline_start = pd.to_datetime(st.session_state.baseline_start_date)
         baseline_end = pd.to_datetime(st.session_state.baseline_end_date)
         num_baseline_months = (baseline_end.to_period('M') - baseline_start.to_period('M')).n + 1
-        
-        st.write(f"**Baseline Period:** {baseline_start.strftime('%B %Y')} to {baseline_end.strftime('%B %Y')}")
-        st.write(f"**Number of Months in Baseline:** {num_baseline_months} months")
+
         
         # Calculate total referrals during the baseline period from the procedure DataFrame
         baseline_procedure_df = procedure_specialty_df[
@@ -59,29 +57,11 @@ if 'procedure_df' in st.session_state and st.session_state.procedure_df is not N
         ]
         total_referrals_baseline = baseline_procedure_df['total referrals'].sum()
         
-        # Scale total referrals to a year's worth of months
-        baseline_yearly_additions = (total_referrals_baseline / num_baseline_months) * 12
-        st.write(f"**Baseline Year's Worth of Additions to Waiting List:** {baseline_yearly_additions:.0f}")
-
-        # Calculate demand minutes for the baseline period
-        baseline_procedure_df['demand minutes'] = baseline_procedure_df['total referrals'] * baseline_procedure_df['average duration']
-        total_demand_minutes_baseline = baseline_procedure_df['demand minutes'].sum()
-        
-        # Scale total demand minutes to a year's worth of months
-        baseline_yearly_demand_minutes = (total_demand_minutes_baseline / num_baseline_months) * 12
-        st.write(f"**Baseline Year's Worth of Demand in Minutes:** {baseline_yearly_demand_minutes:.0f} minutes")
-
-        # Message about next steps
-        st.write("The next step is to analyse the time series of additions to the waiting list to determine whether there is an increase over time.")
-
-
-
-
 import plotly.graph_objects as go
 from scipy.stats import linregress
 import numpy as np
 
-st.subheader("Time Series Analysis")
+st.subheader("Baseline Analysis")        
 
 # Check if necessary data is available
 if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df is not None) and \
@@ -138,7 +118,8 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
 
 
             # --- Baseline Analysis ---
-            st.subheader("Baseline Analysis")
+            st.write(f"**Baseline Period:** {baseline_start.strftime('%B %Y')} to {baseline_end.strftime('%B %Y')}")
+            st.write(f"**Number of Months in Baseline:** {num_baseline_months} months")
             
             # Calculate DTAs from procedure DataFrame
             baseline_procedure_df = procedure_specialty_df[
