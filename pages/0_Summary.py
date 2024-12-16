@@ -84,7 +84,7 @@ specialty_summary['Removals (12-Month)'] = specialty_summary['removals from wait
 specialty_summary['Cases (12-Month)'] = specialty_summary['cases'] * scaling_factor
 
 # Calculate deficit
-specialty_summary['Deficit (12-Month)'] = specialty_summary['Additions (12-Month)'] - specialty_summary['Removals (12-Month)']
+specialty_summary['Deficit (12-Month)'] = specialty_summary['additions to waiting list'] - specialty_summary['removals from waiting list']
 
 # Add a message about the expected change to the waiting list
 specialty_summary['Expected Change'] = specialty_summary.apply(
