@@ -125,6 +125,7 @@ specialty_summary_display = specialty_summary[columns_to_display].rename(columns
     'specialty': 'Specialty',
     'additions to waiting list': 'Additions (Baseline)',
     'removals from waiting list': 'Removals (Baseline)',
+    'cases': 'Cases (Baseline)',
     'Additions (12-Month)': 'Additions (12M)',
     'Removals (12-Month)': 'Removals (12M)',
     'Expected Change': 'Expected WL Change',
