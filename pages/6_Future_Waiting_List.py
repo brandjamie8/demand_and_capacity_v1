@@ -56,13 +56,16 @@ if 'procedure_specialty_df' in st.session_state and 'weeks_last_year' in st.sess
         backlog_40_plus = latest_month_data['40+']
         backlog_52_plus = latest_month_data['52+']
 
+        st.write(f"**Backlog (18+ weeks):** {backlog_18_plus:.0f}")
         st.write(f"**Backlog (40+ weeks):** {backlog_40_plus:.0f}")
         st.write(f"**Backlog (52+ weeks):** {backlog_52_plus:.0f}")
 
         # Calculate total demand including backlog
+        demand_18_plus = waiting_list_additions + backlog_18_plus
         demand_40_plus = waiting_list_additions + backlog_40_plus
         demand_52_plus = waiting_list_additions + backlog_52_plus
 
+        st.write(f"**Demand + Backlog (18+ weeks):** {demand_18_plus:.0f}")
         st.write(f"**Demand + Backlog (40+ weeks):** {demand_40_plus:.0f}")
         st.write(f"**Demand + Backlog (52+ weeks):** {demand_52_plus:.0f}")
 
@@ -70,6 +73,7 @@ if 'procedure_specialty_df' in st.session_state and 'weeks_last_year' in st.sess
         average_cases_per_list = st.session_state.acpl
         weeks_in_year = st.session_state.weeks_last_year
 
+        sessions_required_18 = demand_18_plus / average_cases_per_list / weeks_in_year
         sessions_required_40 = demand_40_plus / average_cases_per_list / weeks_in_year
         sessions_required_52 = demand_52_plus / average_cases_per_list / weeks_in_year
 
@@ -77,11 +81,18 @@ if 'procedure_specialty_df' in st.session_state and 'weeks_last_year' in st.sess
 
         # Display results
         st.subheader("Sessions Needed to Clear Backlog + Demand")
+        st.write(f"- **Sessions per Week (18+ weeks):** {sessions_required_18:.2f}")
         st.write(f"- **Sessions per Week (40+ weeks):** {sessions_required_40:.2f}")
         st.write(f"- **Sessions per Week (52+ weeks):** {sessions_required_52:.2f}")
         st.write(f"- **Sessions Planned per Week:** {sessions_planned:.2f}")
 
-        
+        # Highlight mismatch
+        st.header("Mismatch Analysis")
+        if sessions_planned >= sessions_required_18:
+            st.success("The planned capacity can clear the 18+ backlog and demand.")
+        else:
+            st.warning("The planned capacity is insufficient to clear the 18+ backlog and demand.")
+
         if sessions_planned >= sessions_required_40:
             st.success("The planned capacity can clear the 40+ backlog and demand.")
         else:
