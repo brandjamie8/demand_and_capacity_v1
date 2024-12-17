@@ -27,13 +27,11 @@ sessions_per_week_last_year = st.session_state.get('sessions_per_week_last_year'
 st.header("Baseline Metrics")
 st.write(f"**Baseline Demand (Cases):** {total_demand_cases}")
 st.write(f"**Baseline Capacity (Sessions in 12-Month Equivalent):** {baseline_capacity_sessions}")
-st.write(f"**Baseline Demand (Minutes):** {total_demand_minutes}")
 
 # Predicted Metrics for Next Year
 st.header("Predicted Metrics for Next Year")
 st.write(f"**Predicted Demand (Cases):** {total_demand_cases}")
 st.write(f"**Planned Sessions per Week (Next Year):** {sessions_per_week_next_year}")
-st.write(f"**Predicted Capacity (Total Minutes Available):** {session_minutes_next_year}")
 
 # Waiting List Metrics
 st.header("Waiting List Metrics")
@@ -76,12 +74,12 @@ else:
 st.header("Download Results")
 results_data = {
     "Metric": [
-        "Baseline Demand (Cases)", "Baseline Capacity (Sessions)", "Baseline Demand (Minutes)",
+        "Baseline Demand (Cases)", "Baseline Capacity (Sessions)",
         "Planned Sessions per Week (Next Year)", "Required Sessions per Week", 
         "Predicted Waiting List Start", "Predicted Waiting List End"
     ],
     "Value": [
-        total_demand_cases, baseline_capacity_sessions, total_demand_minutes,
+        total_demand_cases, baseline_capacity_sessions,
         sessions_per_week_next_year, required_sessions_next_year, 
         waiting_list_start, waiting_list_end
     ]
