@@ -126,6 +126,8 @@ summary_data = {
 
 summary_df = pd.DataFrame(summary_data)
 
+default_sessions_per_week = summary_df.loc[summary_df['Operating Model'] == '48 weeks of year', 'Sessions per Week'].values[0]
+
 col1, _ = st.columns(2)
 col1 = st.dataframe(summary_df)
 
@@ -134,7 +136,7 @@ if 'weeks_last_year' not in st.session_state:
     st.session_state.weeks_last_year = 48
 
 if 'sessions_per_week_last_year' not in st.session_state:
-    st.session_state.sessions_per_week_last_year = 10.0
+    st.session_state.sessions_per_week_last_year = default_sessions_per_week
 
 if 'utilisation_last_year' not in st.session_state:
     st.session_state.utilisation_last_year = 0.80
