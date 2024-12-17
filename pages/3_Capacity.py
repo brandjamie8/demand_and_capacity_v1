@@ -68,6 +68,7 @@ baseline_cancellation_rate = total_cancelled_sessions_baseline / (total_sessions
 
 # Calculate ACPL
 cases_per_session = total_cases_baseline / total_sessions_baseline
+st.session_state.acpl = cases_per_session
 
 # Scale up to equivalent 12-month period
 scaling_factor = 12 / num_baseline_months
