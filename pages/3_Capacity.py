@@ -268,6 +268,10 @@ if 'procedure_df' in st.session_state and st.session_state.procedure_df is not N
 
     procedure_df = procedure_df[procedure_df['specialty'] == selected_specialty]
 
+
+procedures_from_acpl = total_sessions_12_months * cases_per_session
+st.write(f"**Number of cases based on baseline ACPL:** {procedures_from_acpl::.0f}")
+
 st.header("Monte Carlo Simulation: Procedures in New Model")
 
 # Probability distribution for procedures based on referrals
