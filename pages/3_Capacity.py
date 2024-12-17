@@ -279,8 +279,8 @@ procedure_df['probability'] = procedure_df['total referrals'] / procedure_df['to
 
 # Set up Monte Carlo simulation
 n_simulations = 50
-available_minutes = session_minutes_last_year
-procedure_durations = procedure_df['average duration'].dropna().values  # Drop NaNs
+available_minutes = total_minutes_12_months
+procedure_durations = procedure_df['average duration'].values 
 procedure_probs = procedure_df['probability'].values
 
 # Ensure validity
