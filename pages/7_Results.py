@@ -15,8 +15,7 @@ required_keys = [
 ]
 
 # Check session state and assign values
-total_demand_cases = st.session_state.get('total_demand_cases', 0)
-total_demand_minutes = st.session_state.get('total_demand_minutes', 0)
+total_demand_cases = st.session_state.total_predicted_cases
 baseline_capacity_sessions = st.session_state.get('total_sessions_12_months', 0)
 session_minutes_next_year = st.session_state.get('session_minutes_next_year', 0)
 waiting_list_start = st.session_state.get('waiting_list_start', 0)
