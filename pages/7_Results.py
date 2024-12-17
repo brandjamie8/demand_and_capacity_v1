@@ -25,7 +25,7 @@ sessions_per_week_last_year = st.session_state.get('sessions_per_week_last_year'
 
 # Predicted Metrics for Next Year
 st.header("Predicted Metrics for Next Year")
-st.write(f"**Predicted Demand (Cases):** {total_demand_cases:0.f}")
+st.write(f"**Predicted Demand (Cases):** {total_demand_cases:.0f}")
 st.write(f"**Baseline Capacity (Sessions in 12-Month Equivalent):** {baseline_capacity_sessions:.0f}")
 st.write(f"**Planned Sessions per Week (Next Year):** {sessions_per_week_next_year}")
 
