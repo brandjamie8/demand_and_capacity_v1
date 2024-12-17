@@ -268,7 +268,6 @@ if 'procedure_df' in st.session_state and st.session_state.procedure_df is not N
 
     procedure_df = procedure_df[procedure_df['specialty'] == selected_specialty]
 
-# Monte Carlo Simulation for Procedures in the New Model
 st.header("Monte Carlo Simulation: Procedures in New Model")
 
 # Probability distribution for procedures based on referrals
@@ -277,8 +276,12 @@ procedure_df['probability'] = procedure_df['total referrals'] / procedure_df['to
 # Set up Monte Carlo simulation
 n_simulations = 50
 available_minutes = session_minutes_last_year
-procedure_durations = procedure_df['average duration'] 
-procedure_probs = procedure_df['probability']
+procedure_durations = procedure_df['average duration'].dropna().values  # Drop NaNs
+procedure_probs = procedure_df['probability'].values
+
+# Ensure validity
+assert len(procedure_durations) == len(procedure_probs), "Durations and probabilities mismatch."
+assert np.isclose(procedure_probs.sum(), 1), "Probabilities must sum to 1."
 
 # Monte Carlo sampling
 total_procedures_fitted = []
@@ -287,18 +290,22 @@ for _ in range(n_simulations):
     minutes_used = 0
     procedures_count = 0
 
-    while minutes_used < available_minutes:
+    while True:
+        # Sample a procedure
         sampled_procedure = np.random.choice(procedure_durations, p=procedure_probs)
-        if minutes_used + sampled_procedure > available_minutes:
+        
+        if minutes_used + sampled_procedure <= available_minutes:
+            minutes_used += sampled_procedure
+            procedures_count += 1
+        else:
             break
-        minutes_used += sampled_procedure
-        procedures_count += 2
 
     total_procedures_fitted.append(procedures_count)
 
 # Calculate average procedures that can fit in new model capacity
 average_procedures_fitted = np.mean(total_procedures_fitted)
 st.session_state.waiting_list_removals = average_procedures_fitted
+
 # Display Monte Carlo results
 st.write(f"**Estimated Number of Procedures in New Model Capacity (Monte Carlo Average):** {average_procedures_fitted:.0f}")
 
@@ -319,3 +326,4 @@ fig_comparison.update_layout(
 )
 
 st.plotly_chart(fig_comparison, use_container_width=True)
+
