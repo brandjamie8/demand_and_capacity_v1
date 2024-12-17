@@ -47,8 +47,8 @@ if 'procedure_specialty_df' in st.session_state and 'weeks_last_year' in st.sess
     st.header("Backlog Integration")
 
     # Assume 'waiting_list_data' exists in session state
-    if 'waiting_list_data' in st.session_state:
-        waiting_list_data = st.session_state.waiting_list_data
+    if 'waiting_list_df' in st.session_state:
+        waiting_list_data = st.session_state.waiting_list_df
 
         # Get latest month's backlog
         latest_month_data = waiting_list_data.iloc[-1]
