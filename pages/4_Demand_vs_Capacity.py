@@ -61,9 +61,6 @@ if ('procedure_specialty_df' in st.session_state and st.session_state.procedure_
     fig_demand_vs_capacity.update_traces(texttemplate='%{text:.0f}', textposition='outside')
     st.plotly_chart(fig_demand_vs_capacity, use_container_width=True)
 
-    # Mismatch and waiting list expectations
-    st.header("Mismatch Analysis and Waiting List Impact")
-
     difference = total_capacity_cases - total_demand_cases
     if difference >= 0:
         st.success(
