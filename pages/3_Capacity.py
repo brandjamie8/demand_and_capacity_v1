@@ -200,6 +200,8 @@ cancelled_sessions_last_year = total_sessions_last_year * cancellation_rate_last
 sessions_run_last_year = total_sessions_last_year - cancelled_sessions_last_year
 session_minutes_last_year = sessions_run_last_year * session_duration_hours * 60 * utilisation_last_year
 
+st.session_state.total_sessions_12_months = total_sessions_last_year
+
 st.write(f"**Total Sessions in Model:** {total_sessions_last_year:.0f}")
 st.write(f"**Total Cancelled Sessions in Model:** {cancelled_sessions_last_year:.0f}")
 st.write(f"**Total Sessions Run in Model:** {sessions_run_last_year:.0f}")
