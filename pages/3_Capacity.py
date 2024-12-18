@@ -50,7 +50,7 @@ baseline_df = waiting_list_df[(waiting_list_df['month'] >= baseline_start) & (wa
 num_baseline_months = len(pd.date_range(start=baseline_start, end=baseline_end, freq='M'))
 
 # Calculate total cases, sessions, cancelled sessions, and minutes utilised in the baseline period
-total_cases_baseline = baseline_df['additions to waiting list'].sum()
+total_cases_baseline = baseline_df['cases'].sum()
 total_sessions_baseline = baseline_df['sessions'].sum()  # Use sessions from waiting_list_df
 total_cancelled_sessions_baseline = baseline_df['cancelled sessions'].sum()
 
