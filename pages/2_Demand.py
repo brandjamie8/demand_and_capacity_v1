@@ -298,6 +298,14 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
                 else:
                     st.write("**Conclusion:** The regression line predicts the baseline better so incorporating a trend may help predict future demand.")
 
+                st.subheader("Choose Prediction Model")
+                selected_model = st.radio(
+                    "Select the model to generate the predicted trend for the next 12 months:",
+                    options=["Average (Baseline)", "Regression"],
+                    index=0 if use_average_for_prediction else 1
+                )
+
+            
             # --- NEW PART: Predict demand for the next 12 months ---
             future_months = pd.date_range(
                 start=st.session_state.model_start_date + pd.DateOffset(months=1),
@@ -306,7 +314,7 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
             )
             
             # Use baseline data scaled to 12 months for prediction when using the average
-            if use_average_for_prediction:
+            if selected_model == "Average (Baseline)":
                 # Calculate the average additions per month from the baseline and scale to 12 months
                 baseline_total_additions = baseline_procedure_df['total referrals'].sum()
                 baseline_scaled_monthly_additions = baseline_total_additions / num_baseline_months
