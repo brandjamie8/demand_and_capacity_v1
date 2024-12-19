@@ -389,7 +389,7 @@ fig_sessions.update_layout(title="Total Sessions: Baseline (12-Month) vs New Mod
 fig_cases = go.Figure()
 fig_cases.add_trace(go.Bar(
     x=['Baseline (12-Month)', 'New Model'],
-    y=[scaled_cases_baseline, total_cases_new_model],
+    y=[total_cases_12_months, total_cases_new_model],
     name='Total Cases'
 ))
 fig_cases.update_layout(title="Total Cases: Baseline (12-Month) vs New Model")
