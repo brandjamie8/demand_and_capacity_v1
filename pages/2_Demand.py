@@ -392,7 +392,7 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
             st.write(f"**Total Predicted Waiting List Referral Demand over Next 12 Months:** {total_predicted_demand:.0f}")
 
             total_predicted_cases = total_predicted_demand * percent_additions_to_cases
-            st.write(f"**Total Predicted Waiting List Theatre Case Demand over Next 12 Months:** {total_predicted_cases:.0f}")
+            st.markdown(f"###Total Predicted Waiting List Theatre Case Demand over Next 12 Months: {total_predicted_cases:.0f}")
 
             st.session_state.total_predicted_cases = total_predicted_cases
        
@@ -402,52 +402,52 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
 else:
     st.write("Please ensure you have uploaded the required data and completed previous sections.")
 
-st.subheader("Planned Procedure Demand")
+#st.subheader("Planned Procedure Demand")
 
 # Convert 'month' column to datetime
-if not pd.api.types.is_datetime64_any_dtype(waiting_list_df['month']):
-    waiting_list_df['month'] = pd.to_datetime(waiting_list_df['month'])
+#if not pd.api.types.is_datetime64_any_dtype(waiting_list_df['month']):
+#    waiting_list_df['month'] = pd.to_datetime(waiting_list_df['month'])
 
 # Filter data for planned procedures and procedure demand
-if 'planned procedures' in waiting_list_df.columns:
-    demand_comparison_df = waiting_list_df[
-        (waiting_list_df['month'] >= baseline_start) & 
-        (waiting_list_df['specialty'] == selected_specialty)
-    ]
+#if 'planned procedures' in waiting_list_df.columns:
+#    demand_comparison_df = waiting_list_df[
+#        (waiting_list_df['month'] >= baseline_start) & 
+#        (waiting_list_df['specialty'] == selected_specialty)
+#    ]
 
     # Ensure required columns are available
-    if 'additions to waiting list' in demand_comparison_df.columns:
-        # Create a stacked column chart
-        fig_demand_comparison = px.bar(
-            demand_comparison_df,
-            x='month',
-            y=['planned procedures', 'additions to waiting list'],
-            labels={'value': 'Number of Procedures', 'variable': 'Type'},
-            title="Planned Procedures vs Total Procedure Demand",
-            barmode='stack',
-            height=600
-        )
+#    if 'additions to waiting list' in demand_comparison_df.columns:
+#        # Create a stacked column chart
+#        fig_demand_comparison = px.bar(
+#            demand_comparison_df,
+#            x='month',
+#            y=['planned procedures', 'additions to waiting list'],
+#            labels={'value': 'Number of Procedures', 'variable': 'Type'},
+#            title="Planned Procedures vs Total Procedure Demand",
+#            barmode='stack',
+#            height=600
+#        )
 
         # Update layout for better clarity
-        fig_demand_comparison.update_layout(
-            xaxis_title="Month",
-            yaxis_title="Number of Procedures",
-            legend_title="Procedure Type"
-        )
+#        fig_demand_comparison.update_layout(
+#            xaxis_title="Month",
+#            yaxis_title="Number of Procedures",
+#            legend_title="Procedure Type"
+#        )
 
         # Display the chart in Streamlit
-        st.plotly_chart(fig_demand_comparison, use_container_width=True)
+#        st.plotly_chart(fig_demand_comparison, use_container_width=True)
 
         # Calculate the percentage of planned procedures in total demand
-        total_planned = demand_comparison_df['planned procedures'].sum()
-        total_demand = demand_comparison_df['additions to waiting list'].sum()
+#        total_planned = demand_comparison_df['planned procedures'].sum()
+#        total_demand = demand_comparison_df['additions to waiting list'].sum()
 
-        if total_demand > 0:  # To avoid division by zero
-            planned_percentage = (total_planned / total_demand) * 100
-            st.write(f"On average, planned procedures make up **{planned_percentage:.2f}%** of total procedure demand.")
-            planned_cases = (planned_percentage / 100) * total_predicted_cases
-            st.write(f"This translates to **{planned_cases:.0f}** cases over the next 12 months.")
+#        if total_demand > 0:  # To avoid division by zero
+#            planned_percentage = (total_planned / total_demand) * 100
+#            st.write(f"On average, planned procedures make up **{planned_percentage:.2f}%** of total procedure demand.")
+#            planned_cases = (planned_percentage / 100) * total_predicted_cases
+#            st.write(f"This translates to **{planned_cases:.0f}** cases over the next 12 months.")
             
-        else:
-            st.write("No data available to calculate the contribution of planned procedures.")
+#        else:
+#            st.write("No data available to calculate the contribution of planned procedures.")
 
