@@ -337,3 +337,95 @@ fig_comparison.update_layout(
 
 st.plotly_chart(fig_comparison, use_container_width=True)
 
+
+# Choose calculation method
+calculation_method = st.radio(
+    "Select how to calculate cases in the new model:",
+    ('Utilisation', 'Average Cases Per Session'),
+    key='calculation_method'
+)
+
+if calculation_method == 'Utilisation':
+    utilisation_last_year = st.slider(
+        "Utilisation Percentage",
+        min_value=0.0,
+        max_value=1.0,
+        value=0.8,
+        step=0.01,
+        key='input_utilisation_last_year'
+    )
+    sessions_per_week = st.number_input(
+        "Sessions per Week",
+        min_value=0.0,
+        step=0.1,
+        value=5.0,
+        key='input_sessions_per_week'
+    )
+    weeks_per_year = st.number_input(
+        "Weeks per Year",
+        min_value=1,
+        max_value=52,
+        value=48,
+        step=1,
+        key='input_weeks_per_year'
+    )
+    
+    total_sessions_new_model = weeks_per_year * sessions_per_week
+    total_cases_new_model = total_sessions_new_model * cases_per_session
+
+else:  # Average Cases Per Session
+    avg_cases_per_session = st.slider(
+        "Average Cases Per Session",
+        min_value=0.01,
+        max_value=5.0,
+        value=cases_per_session,
+        step=0.01,
+        key='input_avg_cases_per_session'
+    )
+    sessions_per_week = st.number_input(
+        "Sessions per Week",
+        min_value=0.0,
+        step=0.1,
+        value=5.0,
+        key='input_sessions_per_week'
+    )
+    weeks_per_year = st.number_input(
+        "Weeks per Year",
+        min_value=1,
+        max_value=52,
+        value=48,
+        step=1,
+        key='input_weeks_per_year'
+    )
+
+    total_sessions_new_model = weeks_per_year * sessions_per_week
+    total_cases_new_model = total_sessions_new_model * avg_cases_per_session
+
+# Display results
+st.write(f"**Total Sessions in New Model:** {total_sessions_new_model:.0f}")
+st.write(f"**Total Cases in New Model:** {total_cases_new_model:.0f}")
+
+# Create charts
+fig_sessions = go.Figure()
+fig_sessions.add_trace(go.Bar(
+    x=['Baseline', 'New Model'],
+    y=[total_sessions_baseline, total_sessions_new_model],
+    name='Total Sessions'
+))
+fig_sessions.update_layout(title="Total Sessions: Baseline vs New Model")
+
+fig_cases = go.Figure()
+fig_cases.add_trace(go.Bar(
+    x=['Baseline', 'New Model'],
+    y=[total_cases_baseline, total_cases_new_model],
+    name='Total Cases'
+))
+fig_cases.update_layout(title="Total Cases: Baseline vs New Model")
+
+col1, col2 = st.columns(2)
+with col1:
+    st.plotly_chart(fig_sessions, use_container_width=True)
+with col2:
+    st.plotly_chart(fig_cases, use_container_width=True)
+
+
