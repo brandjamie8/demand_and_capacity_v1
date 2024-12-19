@@ -370,7 +370,7 @@ else:  # Average Cases Per Session
         key='input_avg_cases_per_session'
     )
 
-    total_sessions_new_model = weeks_last_year * sessions_per_week
+    total_sessions_new_model = weeks_last_year * sessions_per_week_last_year
     total_cases_new_model = total_sessions_new_model * avg_cases_per_session
 
 # Display results
