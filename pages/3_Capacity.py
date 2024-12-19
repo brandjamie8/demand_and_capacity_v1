@@ -381,7 +381,7 @@ st.write(f"**Total Cases in New Model:** {total_cases_new_model:.0f}")
 fig_sessions = go.Figure()
 fig_sessions.add_trace(go.Bar(
     x=['Baseline (12-Month)', 'New Model'],
-    y=[scaled_sessions_baseline, total_sessions_new_model],
+    y=[total_sessions_12_months, total_sessions_new_model],
     name='Total Sessions'
 ))
 fig_sessions.update_layout(title="Total Sessions: Baseline (12-Month) vs New Model")
