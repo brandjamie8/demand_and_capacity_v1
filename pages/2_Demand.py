@@ -392,7 +392,7 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
             st.write(f"**Total Predicted Waiting List Referral Demand over Next 12 Months:** {total_predicted_demand:.0f}")
 
             total_predicted_cases = total_predicted_demand * percent_additions_to_cases
-            st.markdown(f"###Total Predicted Waiting List Theatre Case Demand over Next 12 Months: {total_predicted_cases:.0f}")
+            st.markdown(f"### Total Predicted Waiting List Theatre Case Demand over Next 12 Months: {total_predicted_cases:.0f}")
 
             st.session_state.total_predicted_cases = total_predicted_cases
        
