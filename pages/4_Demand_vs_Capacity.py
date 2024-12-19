@@ -81,6 +81,6 @@ if ('procedure_specialty_df' in st.session_state and st.session_state.procedure_
     if difference < 0:
         st.write("The current capacity is insufficient to meet demand, leading to an expected increase in the waiting list.")
     else:
-        st.write("The current capacity is sufficient to meet demand, which should stabilize or reduce the waiting list.")
+        st.write("The current capacity is sufficient to meet demand, which should stabilise or reduce the waiting list.")
 else:
     st.write("Please ensure you have completed the required sections and loaded all necessary data into session state.")
