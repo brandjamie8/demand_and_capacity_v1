@@ -89,15 +89,15 @@ if 'procedure_specialty_df' in st.session_state and 'weeks_last_year' in st.sess
     
             # Display results
             st.header("Sessions Needed")
-            st.write(f"- **Sessions per Week (18+ weeks):** {sessions_required_18:.2f}")
-            st.write(f"- **Sessions per Week (40+ weeks):** {sessions_required_40:.2f}")
-            st.write(f"- **Sessions per Week (52+ weeks):** {sessions_required_52:.2f}")
+            st.write(f"**Sessions per Week (18+ weeks):** {sessions_required_18:.2f}")
+            st.write(f"**Sessions per Week (40+ weeks):** {sessions_required_40:.2f}")
+            st.write(f"**Sessions per Week (52+ weeks):** {sessions_required_52:.2f}")
         with col4:
             st.write("")
             st.write("")
             st.write("")
             st.write("")
-            st.write(f"- **Sessions Planned per Week:** {sessions_planned:.2f}")
+            st.write(f"**Sessions Planned per Week:** {sessions_planned:.2f}")
 
         # Highlight mismatch
         st.header("Mismatch Analysis")
