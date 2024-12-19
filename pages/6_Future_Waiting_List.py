@@ -95,6 +95,8 @@ if 'procedure_specialty_df' in st.session_state and 'weeks_last_year' in st.sess
         with col4:
             st.write("")
             st.write("")
+            st.write("")
+            st.write("")
             st.write(f"- **Sessions Planned per Week:** {sessions_planned:.2f}")
 
         # Highlight mismatch
