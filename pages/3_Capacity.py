@@ -357,7 +357,7 @@ if calculation_method == 'Utilisation':
         key='input_utilisation_last_year'
     )
     
-    total_sessions_new_model = weeks_per_year * sessions_per_week
+    total_sessions_new_model = weeks_last_year * sessions_per_week
     total_cases_new_model = total_sessions_new_model * cases_per_session
 
 else:  # Average Cases Per Session
