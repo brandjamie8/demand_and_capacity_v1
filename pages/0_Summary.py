@@ -86,12 +86,11 @@ specialty_summary['Cases (12-Month)'] = specialty_summary['cases'] * scaling_fac
 # Calculate deficit
 specialty_summary['Deficit (12-Month)'] = specialty_summary['additions to waiting list'] - specialty_summary['removals from waiting list']
 
-# Add a message about the expected change to the waiting list
 specialty_summary['Expected Change'] = specialty_summary.apply(
     lambda row: (
-        f"Increase in waiting list by {row['Deficit (12-Month)']:.0f}" if row['Deficit (12-Month)'] > 0 else
-        f"Decrease in waiting list by {-row['Deficit (12-Month)']:.0f}" if row['Deficit (12-Month)'] < 0 else
-        "No change in waiting list"
+        f"⬆ Increase by {row['Deficit (12-Month)']:.0f}" if row['Deficit (12-Month)'] > 0 else
+        f"⬇ Decrease by {-row['Deficit (12-Month)']:.0f}" if row['Deficit (12-Month)'] < 0 else
+        "➡ No change"
     ),
     axis=1
 )
