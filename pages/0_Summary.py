@@ -278,7 +278,7 @@ numeric_columns = [
 ]
 latest_month_summary[numeric_columns] = latest_month_summary[numeric_columns].round(0).astype(int)
 latest_month_summary.sort_values(by='specialty', inplace=True, ignore_index=True)
-latest_month_summary.rename(columns={'specialty': 'Specialty'})
+latest_month_summary = latest_month_summary.rename(columns={'specialty': 'Specialty'})
 # Add totals row
 totals = latest_month_summary[numeric_columns].sum()
 totals['Specialty'] = 'Total'
