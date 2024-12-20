@@ -228,13 +228,13 @@ latest_month_summary.rename(columns={
 
 # Merge in the 'Additions (12M)', 'Cases (12M)', and 'Cases Needed for Additions (12M)' columns from the first table
 latest_month_summary = latest_month_summary.merge(
-    specialty_summary_display[['Specialty', 'Additions (12-Month)', 'Cases (12-Month)', 'Cases Needed for Additions (12M)']],
+    specialty_summary_display[['Specialty', 'Additions (12-Month)', 'Cases (12-Month)', 'Cases to Meet Demand (12M)']],
     left_on='specialty', right_on='Specialty', how='left'
 )
 
 # Calculate the difference between 'Cases (12M)' and 'Cases Needed for Additions (12M)'
 latest_month_summary['Difference (Cases vs. Needed)'] = (
-    latest_month_summary['Cases (12M)'] - latest_month_summary['Cases Needed for Additions (12M)']
+    latest_month_summary['Cases (12M)'] - latest_month_summary['Cases to Meet Demand (12M)']
 )
 
 # Replace NaN or infinite values caused by mismatches or calculations
@@ -244,6 +244,4 @@ latest_month_summary.replace([float('inf'), float('-inf')], 0, inplace=True)
 # Drop the redundant 'Specialty' column after merge
 latest_month_summary.drop(columns=['Specialty'], inplace=True)
 
-# Add the second table below the first
-st.header(f"Latest Month Specialty Breakdown ({latest_month.strftime('%B %Y')})")
 st.dataframe(latest_month_summary)
