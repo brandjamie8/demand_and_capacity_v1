@@ -282,7 +282,7 @@ latest_month_summary = latest_month_summary.rename(columns={'specialty': 'Specia
 # Add totals row
 totals = latest_month_summary[numeric_columns].sum()
 totals['Specialty'] = 'Total'
-totals['Sufficient Cases for Baseline'] = ''
+#totals['Sufficient Cases for Baseline'] = ''
 totals['Backlog Status'] = ''
 latest_month_summary = pd.concat([latest_month_summary, pd.DataFrame([totals])], ignore_index=True)
 
