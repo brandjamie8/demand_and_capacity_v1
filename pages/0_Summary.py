@@ -113,18 +113,27 @@ specialty_summary['Capacity Status'] = specialty_summary.apply(
     axis=1
 )
 
+specialty_summary['Cases (12M)'] = (
+    specialty_summary['Removals (12M)'] *
+    (specialty_summary['Cases (Baseline)'] / specialty_summary_display['Removals (Baseline)'])
+)
+
+# Replace NaN or infinite values caused by division by zero with 0
+specialty_summary['Cases (12M)'] = specialty_summary['Cases (12M)'].fillna(0).replace([float('inf'), float('-inf')], 0)
+
 # Select relevant columns to display
 columns_to_display = [
     'specialty', 
     'additions to waiting list',
-    'cases',
     'removals from waiting list',
+    'cases',
     'Expected Change',
     'Waiting List Size (Start)',
     'Waiting List Size (End)',
     'Waiting List Change',  
     'Additions (12-Month)',
     'Removals (12-Month)',
+    'Cases (12M)',
     'Capacity Status'
 ]
 
@@ -139,6 +148,9 @@ specialty_summary_display = specialty_summary[columns_to_display].rename(columns
     'Expected Change': 'Expected WL Change',
     'Change vs. Deficit': 'Change vs. Deficit (12M)'
 })
+
+
+
 
 
 
