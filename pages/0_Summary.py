@@ -274,12 +274,10 @@ latest_month_summary['Backlog Status'] = latest_month_summary.apply(backlog_stat
 numeric_columns = [
     f'18+ ({latest_month.strftime("%B %Y")})', f'40+ ({latest_month.strftime("%B %Y")})',
     f'52+ ({latest_month.strftime("%B %Y")})', 'Additions (12M)', 'Cases (12M)',
-    'Cases Needed for Additions (12M)', 'Difference (Cases vs. Needed)'
+    'Cases to Meet Demand (12M)', 'Difference (Cases vs. Needed)'
 ]
 latest_month_summary[numeric_columns] = latest_month_summary[numeric_columns].round(0).astype(int)
 
-# Capitalise the first letter of specialty
-latest_month_summary['specialty'] = latest_month_summary['specialty'].str.capitalize()
 
 # Add totals row
 totals = latest_month_summary[numeric_columns].sum()
@@ -302,6 +300,10 @@ styled_latest_table = (
 
 
 st.dataframe(latest_month_summary)
+
+
+styled_latest_table = styled_latest_table.rename(columns={'specialty': 'Specialty'})
+
 st.dataframe(styled_latest_table)
 
 
