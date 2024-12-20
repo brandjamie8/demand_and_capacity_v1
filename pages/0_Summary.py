@@ -252,9 +252,9 @@ latest_month_summary.replace([float('inf'), float('-inf')], 0, inplace=True)
 latest_month_summary.drop(columns=['Specialty'], inplace=True)
 
 # Add column for sufficient cases to meet baseline demand
-latest_month_summary['Sufficient Cases for Baseline'] = np.where(
-    latest_month_summary['Difference (Cases vs. Needed)'] > 0, 'Yes', 'No'
-)
+#latest_month_summary['Sufficient Cases for Baseline'] = np.where(
+#    latest_month_summary['Difference (Cases vs. Needed)'] > 0, 'Yes', 'No'
+#)
 
 # Add column for surplus cases addressing backlog
 def backlog_status(row):
@@ -278,10 +278,10 @@ numeric_columns = [
 ]
 latest_month_summary[numeric_columns] = latest_month_summary[numeric_columns].round(0).astype(int)
 latest_month_summary.sort_values(by='specialty', inplace=True, ignore_index=True)
-
+latest_month_summary.rename(columns={'specialty': 'Specialty'})
 # Add totals row
 totals = latest_month_summary[numeric_columns].sum()
-totals['specialty'] = 'Total'
+totals['Specialty'] = 'Total'
 totals['Sufficient Cases for Baseline'] = ''
 totals['Backlog Status'] = ''
 latest_month_summary = pd.concat([latest_month_summary, pd.DataFrame([totals])], ignore_index=True)
@@ -292,7 +292,7 @@ def highlight_totals_row(row):
         return ['background-color: lightgrey; font-weight: bold' for _ in row]
     return ['' for _ in row]
 
-
+#latest_month_summary.drop(columns=['Additions (12M)'], inplace=True)
 st.dataframe(latest_month_summary)
 
 
