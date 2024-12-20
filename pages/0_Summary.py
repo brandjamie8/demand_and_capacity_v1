@@ -293,9 +293,16 @@ def highlight_totals_row(row):
     return ['' for _ in row]
 
 #latest_month_summary.drop(columns=['Additions (12M)'], inplace=True)
-st.dataframe(latest_month_summary)
+#st.dataframe(latest_month_summary)
 
+# Apply formatting and styling
+styled_table2 = (
+    latest_month_summary.style
+    .apply(highlight_total_row, axis=1)
+    .format(format_numbers)
+)
 
+st.write(styled_table2)
 
 
 st.download_button(
