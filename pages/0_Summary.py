@@ -293,23 +293,13 @@ def highlight_totals_row(row):
     return ['' for _ in row]
 
 
-
-
-# Display the table with styling
-styled_latest_table = (
-    latest_month_summary.style
-    .apply(highlight_totals_row, axis=1)
-)
-
-
 st.dataframe(latest_month_summary)
 
 
-st.dataframe(styled_latest_table)
 
 
 st.download_button(
-    label="Download Latest Month Specialty Breakdown",
+    label="Download Backlog Summary",
     data=latest_month_summary.to_csv(index=False),
     file_name=f"latest_month_specialty_breakdown_{latest_month.strftime('%Y_%m')}.csv",
     mime="text/csv"
