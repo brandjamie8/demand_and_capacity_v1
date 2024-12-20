@@ -140,14 +140,29 @@ specialty_summary_display = specialty_summary[columns_to_display].rename(columns
     'Change vs. Deficit': 'Change vs. Deficit (12M)'
 })
 
-# Display the summary table
-st.header("Specialty Summary")
-st.dataframe(specialty_summary_display)
+# Calculate the total row
+total_row = specialty_summary_display.sum(numeric_only=True)
+total_row['Specialty'] = 'Total'
+total_row = pd.DataFrame(total_row).T
 
-# Add a download button for the table
+# Combine the total row with the original table
+specialty_summary_display_with_total = pd.concat([specialty_summary_display, total_row], ignore_index=True)
+
+# Format the total row in bold using Pandas Styler
+def highlight_total_row(row):
+    return ['font-weight: bold' if row.name == len(specialty_summary_display) else '' for _ in row]
+
+styled_table = specialty_summary_display_with_total.style.apply(highlight_total_row, axis=1)
+
+# Display the styled table
+st.header("Specialty Summary")
+st.write(styled_table)
+
+# Add a download button for the table without styling
 st.download_button(
     label="Download Specialty Summary",
-    data=specialty_summary_display.to_csv(index=False),
-    file_name="specialty_summary.csv",
+    data=specialty_summary_display_with_total.to_csv(index=False),
+    file_name="specialty_summary_with_total.csv",
     mime="text/csv"
 )
+
