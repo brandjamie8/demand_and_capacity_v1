@@ -228,7 +228,7 @@ latest_month_summary.rename(columns={
 
 # Merge in the 'Additions (12M)', 'Cases (12M)', and 'Cases Needed for Additions (12M)' columns from the first table
 latest_month_summary = latest_month_summary.merge(
-    specialty_summary_display[['Specialty', 'Additions (12M)', 'Cases (12M)', 'Cases Needed for Additions (12M)']],
+    specialty_summary_display[['Specialty', 'Additions (12-Month)', 'Cases (12-Month)', 'Cases Needed for Additions (12M)']],
     left_on='specialty', right_on='Specialty', how='left'
 )
 
