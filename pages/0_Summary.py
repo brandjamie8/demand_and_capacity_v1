@@ -161,7 +161,7 @@ def format_numbers(val):
 # Highlight the total row
 def highlight_total_row(row):
     if row.name == len(specialty_summary_display):  # Check if it's the last row (total row)
-        return ['background-color: lightgray; font-weight: bold' for _ in row]
+        return ['background-color: whitesmoke; font-weight: bold' for _ in row]
     return ['' for _ in row]
 
 # Apply formatting and styling
