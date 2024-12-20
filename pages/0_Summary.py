@@ -95,7 +95,7 @@ specialty_summary['Expected Change'] = specialty_summary.apply(
     ),
     axis=1
 )
-
+total_deficit = specialty_summary['Deficit (12-Month)'].sum()
 # Add a comparison between waiting list change and deficit
 specialty_summary['Change vs. Deficit'] = specialty_summary.apply(
     lambda row: row['Waiting List Change'] - row['Deficit (12-Month)'],
@@ -173,7 +173,6 @@ specialty_summary_display = specialty_summary[columns_to_display].rename(columns
 total_row = specialty_summary_display.sum(numeric_only=True)
 total_row['Specialty'] = 'Total'
 
-total_deficit = total_row['Deficit (12-Month)']
 total_row['Expected WL Change'] = (
     f"⬆ Increase by {total_deficit:.0f}" if total_deficit > 0 else
     f"⬇ Decrease by {-total_deficit:.0f}" if total_deficit < 0 else
