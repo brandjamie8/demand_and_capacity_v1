@@ -292,6 +292,9 @@ def highlight_totals_row(row):
         return ['background-color: lightgrey; font-weight: bold' for _ in row]
     return ['' for _ in row]
 
+
+
+
 # Display the table with styling
 styled_latest_table = (
     latest_month_summary.style
@@ -301,8 +304,6 @@ styled_latest_table = (
 
 st.dataframe(latest_month_summary)
 
-
-styled_latest_table = styled_latest_table.rename(columns={'specialty': 'Specialty'})
 
 st.dataframe(styled_latest_table)
 
