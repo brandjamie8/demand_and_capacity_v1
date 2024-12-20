@@ -209,4 +209,41 @@ st.download_button(
     mime="text/csv"
 )
 
+# Get the latest month in the dataset
+latest_month = waiting_list_df['month'].max()
 
+# Filter rows for the latest month
+latest_month_data = waiting_list_df[waiting_list_df['month'] == latest_month]
+
+# Select the required columns for the new table
+columns_to_extract = ['specialty', '18+', '40+', '52+']
+latest_month_summary = latest_month_data[columns_to_extract].copy()
+
+# Add the month to the column names for clarity
+latest_month_summary.rename(columns={
+    '18+': f'18+ ({latest_month.strftime("%B %Y")})',
+    '40+': f'40+ ({latest_month.strftime("%B %Y")})',
+    '52+': f'52+ ({latest_month.strftime("%B %Y")})'
+}, inplace=True)
+
+# Merge in the 'Additions (12M)', 'Cases (12M)', and 'Cases Needed for Additions (12M)' columns from the first table
+latest_month_summary = latest_month_summary.merge(
+    specialty_summary_display[['Specialty', 'Additions (12M)', 'Cases (12M)', 'Cases Needed for Additions (12M)']],
+    left_on='specialty', right_on='Specialty', how='left'
+)
+
+# Calculate the difference between 'Cases (12M)' and 'Cases Needed for Additions (12M)'
+latest_month_summary['Difference (Cases vs. Needed)'] = (
+    latest_month_summary['Cases (12M)'] - latest_month_summary['Cases Needed for Additions (12M)']
+)
+
+# Replace NaN or infinite values caused by mismatches or calculations
+latest_month_summary.fillna(0, inplace=True)
+latest_month_summary.replace([float('inf'), float('-inf')], 0, inplace=True)
+
+# Drop the redundant 'Specialty' column after merge
+latest_month_summary.drop(columns=['Specialty'], inplace=True)
+
+# Add the second table below the first
+st.header(f"Latest Month Specialty Breakdown ({latest_month.strftime('%B %Y')})")
+st.dataframe(latest_month_summary)
