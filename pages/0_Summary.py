@@ -115,7 +115,7 @@ specialty_summary['Capacity Status'] = specialty_summary.apply(
 
 specialty_summary['Cases (12M)'] = (
     specialty_summary['Removals (12-Month)'] *
-    (specialty_summary['cases'] / specialty_summary['removals'])
+    (specialty_summary['cases'] / specialty_summary['removals from waiting list'])
 )
 
 # Replace NaN or infinite values caused by division by zero with 0
