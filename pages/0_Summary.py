@@ -152,6 +152,8 @@ specialty_summary_display_with_total = pd.concat([specialty_summary_display, tot
 
 # Format the numbers to zero decimal places
 def format_numbers(val):
+    if pd.isna(val):  # Check for NaN values
+        return "0"  # Replace NaN with '0'
     if isinstance(val, (int, float)):
         return f"{int(val):,}"  # Add commas for thousands separator
     return val
@@ -170,7 +172,7 @@ st.write(styled_table)
 # Add a download button for the table without styling
 st.download_button(
     label="Download Specialty Summary",
-    data=specialty_summary_display_with_total.to_csv(index=False),
+    data=specialty_summary_display_with_total.fillna(0).to_csv(index=False),  # Replace NaN for download
     file_name="specialty_summary_with_total.csv",
     mime="text/csv"
 )
