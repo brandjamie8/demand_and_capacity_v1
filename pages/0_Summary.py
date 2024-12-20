@@ -141,8 +141,8 @@ columns_to_display = [
     'removals from waiting list',
     'cases',
     'Expected Change',
-    'Waiting List Size (Start)',
-    'Waiting List Size (End)',
+    #'Waiting List Size (Start)',
+    #'Waiting List Size (End)',
     'Waiting List Change',  
     'Additions (12-Month)',
     'Removals (12-Month)',
@@ -159,7 +159,8 @@ specialty_summary_display = specialty_summary[columns_to_display].rename(columns
     'Additions (12-Month)': 'Additions (12M)',
     'Removals (12-Month)': 'Removals (12M)',
     'Expected Change': 'Expected WL Change',
-    'Change vs. Deficit': 'Change vs. Deficit (12M)'
+    'Change vs. Deficit': 'Change vs. Deficit (12M)',
+    'Waiting List Change': 'Actual WL Change over Baseline'
 })
 
 
