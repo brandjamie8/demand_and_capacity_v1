@@ -278,14 +278,10 @@ procedures_from_acpl = sessions_run_last_year * cases_per_session
 st.markdown(f"### Number of cases based on baseline ACPL: {procedures_from_acpl:.0f}")
 st.session_state.procedures_from_acpl = procedures_from_acpl
 
-st.header("Monte Carlo Simulation: Procedures in New Model")
 
 # Probability distribution for procedures based on referrals
 procedure_df['probability'] = procedure_df['total referrals'] / procedure_df['total referrals'].sum()
 
-
-
-st.header("Session Model Configuration")
 
 # Choose calculation method
 calculation_method = st.radio(
