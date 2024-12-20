@@ -124,11 +124,11 @@ specialty_summary['Cases (12M)'] = specialty_summary['Cases (12M)'].fillna(0).re
 # Calculate Cases Needed for Additions (12M)
 specialty_summary['Cases to Meet Demand (12M)'] = (
     specialty_summary['Cases (12M)'] *
-    (specialty_summary['Additions (12-Month)'] / specialty_summary_display['Removals (12-Month)'])
+    (specialty_summary['Additions (12-Month)'] / specialty_summary['Removals (12-Month)'])
 )
 
 # Replace NaN or infinite values caused by division by zero with 0 for Cases Needed for Additions (12M)
-specialty_summary['Cases to Meet Demand (12M)'] = specialty_summary_display['Cases to Meet Demand (12M)'].fillna(0).replace([float('inf'), float('-inf')], 0)
+specialty_summary['Cases to Meet Demand (12M)'] = specialty_summary['Cases to Meet Demand (12M)'].fillna(0).replace([float('inf'), float('-inf')], 0)
 
 
 
