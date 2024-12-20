@@ -172,6 +172,14 @@ specialty_summary_display = specialty_summary[columns_to_display].rename(columns
 # Calculate the total row
 total_row = specialty_summary_display.sum(numeric_only=True)
 total_row['Specialty'] = 'Total'
+
+total_deficit = total_row['Deficit (12-Month)']
+total_row['Expected WL Change'] = (
+    f"⬆ Increase by {total_deficit:.0f}" if total_deficit > 0 else
+    f"⬇ Decrease by {-total_deficit:.0f}" if total_deficit < 0 else
+    "➡ No change"
+)
+
 total_row = pd.DataFrame(total_row).T
 
 # Combine the total row with the original table
@@ -199,7 +207,7 @@ styled_table = (
 )
 
 # Display the styled table
-st.header("Specialty Summary")
+st.subheader("Specialty Summary")
 st.write(styled_table)
 
 # Add a download button for the table
