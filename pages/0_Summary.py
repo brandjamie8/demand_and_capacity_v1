@@ -277,7 +277,7 @@ numeric_columns = [
     'Cases to Meet Demand (12M)', 'Difference (Cases vs. Needed)'
 ]
 latest_month_summary[numeric_columns] = latest_month_summary[numeric_columns].round(0).astype(int)
-
+latest_month_summary.sort_values(by='specialty', inplace=True, ignore_index=True)
 
 # Add totals row
 totals = latest_month_summary[numeric_columns].sum()
