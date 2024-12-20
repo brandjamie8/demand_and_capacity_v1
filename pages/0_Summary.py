@@ -158,10 +158,16 @@ def format_numbers(val):
         return f"{int(val):,}"  # Add commas for thousands separator
     return val
 
+# Highlight the total row
+def highlight_total_row(row):
+    if row.name == len(specialty_summary_display):  # Check if it's the last row (total row)
+        return ['background-color: lightgray; font-weight: bold' for _ in row]
+    return ['' for _ in row]
+
 # Apply formatting and styling
 styled_table = (
     specialty_summary_display_with_total.style
-    .apply(lambda row: ['font-weight: bold' if row.name == len(specialty_summary_display) else '' for _ in row], axis=1)
+    .apply(highlight_total_row, axis=1)
     .format(format_numbers)
 )
 
