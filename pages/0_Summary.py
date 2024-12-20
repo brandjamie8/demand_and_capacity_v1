@@ -140,6 +140,8 @@ specialty_summary_display = specialty_summary[columns_to_display].rename(columns
     'Change vs. Deficit': 'Change vs. Deficit (12M)'
 })
 
+
+
 # Calculate the total row
 total_row = specialty_summary_display.sum(numeric_only=True)
 total_row['Specialty'] = 'Total'
@@ -148,11 +150,18 @@ total_row = pd.DataFrame(total_row).T
 # Combine the total row with the original table
 specialty_summary_display_with_total = pd.concat([specialty_summary_display, total_row], ignore_index=True)
 
-# Format the total row in bold using Pandas Styler
-def highlight_total_row(row):
-    return ['font-weight: bold' if row.name == len(specialty_summary_display) else '' for _ in row]
+# Format the numbers to zero decimal places
+def format_numbers(val):
+    if isinstance(val, (int, float)):
+        return f"{int(val):,}"  # Add commas for thousands separator
+    return val
 
-styled_table = specialty_summary_display_with_total.style.apply(highlight_total_row, axis=1)
+# Apply formatting and styling
+styled_table = (
+    specialty_summary_display_with_total.style
+    .apply(lambda row: ['font-weight: bold' if row.name == len(specialty_summary_display) else '' for _ in row], axis=1)
+    .format(format_numbers)
+)
 
 # Display the styled table
 st.header("Specialty Summary")
@@ -165,4 +174,5 @@ st.download_button(
     file_name="specialty_summary_with_total.csv",
     mime="text/csv"
 )
+
 
