@@ -161,10 +161,6 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
             st.write(f"**Theatre Cases Needed to Remove Demand (Scaled to Year):** {baseline_scaled_cases_needed:.0f}")
             
 
-
-
-            
-            # --- NEW PART: Filter data for the 12 months before the baseline start date ---
             start_12_months_prior = baseline_start - pd.DateOffset(months=12)
             pre_baseline_df = waiting_list_specialty_df[
                 (waiting_list_specialty_df['month'] >= start_12_months_prior) &
@@ -175,17 +171,13 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
             if len(pre_baseline_df) < 2:
                 st.warning("Not enough data points in the 12 months before the baseline start date for regression analysis.")
             else:
-                # --- NEW PART: Extract months and demand data from the 12 months prior to the baseline ---
                 pre_months = pre_baseline_df['month']
                 pre_demand = pre_baseline_df['additions to waiting list']
 
                 # Convert months to ordinal for regression analysis
                 pre_months_ordinal = pre_months.map(pd.Timestamp.toordinal)
-
-                # --- NEW PART: Perform linear regression to assess trend for the pre-baseline period ---
                 slope, intercept, r_value, p_value, std_err = linregress(pre_months_ordinal, pre_demand)
 
-                # --- NEW PART: Predict demand for the baseline period using the trained model ---
                 baseline_df = waiting_list_specialty_df[
                     (waiting_list_specialty_df['month'] >= baseline_start) &
                     (waiting_list_specialty_df['month'] <= baseline_end)
@@ -194,11 +186,9 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
                 baseline_months_ordinal = baseline_df['month'].map(pd.Timestamp.toordinal)
                 predicted_baseline_demand = intercept + slope * baseline_months_ordinal
 
-                # --- NEW PART: Predict using the average from pre-baseline ---
                 average_demand = pre_demand.mean()
                 predicted_baseline_average = [average_demand] * len(baseline_months_ordinal)
 
-                # --- NEW PART: Calculate the error between actual and predicted demand ---
                 actual_baseline_demand = baseline_df['additions to waiting list']
                 error_regression = np.abs(actual_baseline_demand - predicted_baseline_demand).mean()
                 error_average = np.abs(actual_baseline_demand - predicted_baseline_average).mean()
@@ -206,7 +196,6 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
                 # Determine which method is more predictive
                 use_average_for_prediction = error_average < error_regression
 
-                # --- NEW PART: Create a DataFrame for plotting the predicted vs actual baseline demand ---
                 prediction_df = pd.DataFrame({
                     'month': waiting_list_specialty_df['month'],
                     'actual_demand': waiting_list_specialty_df['additions to waiting list']
@@ -215,7 +204,6 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
                 historic_months_ordinal = pre_months_ordinal
                 fitted_historic_demand = intercept + slope * historic_months_ordinal
                 
-                # --- NEW PART: Plot the actual vs predicted demand for the baseline period ---
                 fig_baseline = go.Figure()
                 # Add the actual demand trace
                 fig_baseline.add_trace(go.Scatter(
@@ -305,8 +293,6 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
                     index=0 if use_average_for_prediction else 1
                 )
 
-            
-            # --- NEW PART: Predict demand for the next 12 months ---
             future_months = pd.date_range(
                 start=st.session_state.model_start_date + pd.DateOffset(months=1),
                 periods=12,
@@ -319,6 +305,10 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
                 baseline_total_additions = baseline_procedure_df['total referrals'].sum()
                 baseline_scaled_monthly_additions = baseline_total_additions / num_baseline_months
                 future_demand = [baseline_scaled_monthly_additions] * len(future_months)
+                ###################################################
+                st.write(f"monthly additions {baseline_scaled_monthly_additions}")
+                st.write(f"months {len(future_months)}")
+                ###################################################
                 prediction_method = "Average (Baseline)"
             else:
                 # Use regression-based prediction if average is not chosen
@@ -331,9 +321,6 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
                 'month': future_months,
                 'predicted_demand': future_demand
             })
-
-
-            # --- END OF NEW PART ---
 
             # Plot the demand and predicted trend for the entire period, highlighting the baseline and future predictions
             fig_demand = go.Figure()
