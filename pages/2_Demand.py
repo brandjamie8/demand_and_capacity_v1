@@ -306,7 +306,8 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
                 baseline_scaled_monthly_additions = baseline_total_additions / num_baseline_months
                 future_demand = [baseline_scaled_monthly_additions] * len(future_months)
                 ###################################################
-                st.dataframe(baseline_procedure_df)
+                grouped_df = baseline_procedure_df.groupby('month')['total referrals'].sum().reset_index()
+                st.dataframe(grouped_df)
                 ###################################################
                 prediction_method = "Average (Baseline)"
             else:
@@ -332,7 +333,15 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
                 name='Actual Demand',
                 line=dict(color='#f5136f')
             ))
-
+            ############################################
+            fig_demand.add_trace(go.Scatter(
+                x=grouped_df['month'],
+                y=grouped_df['total referrals'],
+                mode='lines+markers',
+                name='procedure Demand',
+                line=dict(color='purple')
+            ))
+            ###############################################
             # Add the predicted future demand trace
             fig_demand.add_trace(go.Scatter(
                 x=future_df['month'],
