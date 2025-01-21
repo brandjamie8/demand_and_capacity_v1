@@ -44,7 +44,6 @@ if 'procedure_df' in st.session_state and st.session_state.procedure_df is not N
         # Save the filtered DataFrame in session state for use in other pages
         st.session_state.procedure_specialty_df = procedure_specialty_df
 
-        # --- NEW PART: Display Baseline Period Information ---
         baseline_start = pd.to_datetime(st.session_state.baseline_start_date)
         baseline_end = pd.to_datetime(st.session_state.baseline_end_date)
         num_baseline_months = (baseline_end.to_period('M') - baseline_start.to_period('M')).n + 1
@@ -306,7 +305,7 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
                 baseline_scaled_monthly_additions = baseline_total_additions / num_baseline_months
                 future_demand = [baseline_scaled_monthly_additions] * len(future_months)
                 ###################################################
-                grouped_df = baseline_procedure_df.groupby('month')['total referrals'].sum().reset_index()
+                grouped_df = procedure_specialty_df.groupby('month')['total referrals'].sum().reset_index()
                 st.dataframe(grouped_df)
                 ###################################################
                 prediction_method = "Average (Baseline)"
