@@ -306,8 +306,7 @@ if ('waiting_list_df' in st.session_state and st.session_state.waiting_list_df i
                 baseline_scaled_monthly_additions = baseline_total_additions / num_baseline_months
                 future_demand = [baseline_scaled_monthly_additions] * len(future_months)
                 ###################################################
-                st.write(f"monthly additions {baseline_scaled_monthly_additions}")
-                st.write(f"months {len(future_months)}")
+                st.df(baseline_procedure_df)
                 ###################################################
                 prediction_method = "Average (Baseline)"
             else:
